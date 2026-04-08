@@ -1,0 +1,27 @@
+FILE 4:
+[See the Paradoxes in mathematics.txt file before coming here]
+
+LOGICISM:
+The belief that mathematics can be reduced to logic. This was the view of Frege and Russell. However, this view was shown to be inconsistent due to Russell's paradox.
+Continuition of the logicism:
+-> Gottlieb Frege -> Believed mathematics  is just logic (Known as logicism)
+Logicism is continued  by Bertrand Russell and Alfred North Whitehead in their work "Principia Mathematica". They attempted to derive all of mathematics from a small set of axioms and inference rules in logic. they continued Frege's work and tried to fix the inconsistencies in his system.
+Russell and Whitehead continued Frege's work and tried to fix the inconsistencies in his system. Russell realised paradox happens because sets can refer to themselves. So he proposed a solution to the paradox by introducing a hierarchy of types --- called 
+TYPE THEORY:
+In this theory, sets are divided into different types, and a set of a certain type can only contain sets of a lower type. This prevents sets from referring to themselves and thus avoids the paradox. However, this solution was not widely accepted, and it did not solve the problem of inconsistency in Frege's system.
+-> It was extremely complex
+-> Not practical for all mathematics
+-> Failed to fully achieve the logicist dream
+Significance Logicism introduced:
+ne
+2. Symbolic reasoning (using symbols to represent mathematical objects and operations like +, -, *, /, etc.)
+3. Foundations for type systems in programming (5+"hello" is not valid because 5 is a number and "hello" is a string, and they belong to different types)
+
+INTUITIONISM:
+Led by L.E.J. Brouwer, intuitionism is the belief that mathematics is a creation of the human mind and the intuitionsim only accepts mathematical objects that are constructively defined. This means that a mathematical object is only considered to exist if it can be explicitly constructed. Intuitionism also rejects the law of excluded middle, which states that every mathematical statement is either true or false. Instead, intuitionists believe that some statements may be neither true nor false, and that the truth of a statement can only be determined by constructing a proof for it.
+
+FORMALISM:
+Led by David Hilbert, formalism is the belief that mathematics is a formal game played with symbols according to certain rules. Formalists believe that mathematics is not about any particular objects or concepts, but rather about the manipulation of symbols according to certain rules. They also believe that the consistency of a mathematical system can be proven using a mechanical method, which is known as Hilbert's program. However, Gödel's incompleteness theorems showed that Hilbert's program is not possible, and that there are limits to what can be proven using a mechanical method.
+
+Gödel's incompleteness theorems:
+In 1931, Kurt Gödel published his incompleteness theorems, which showed that any consistent formal system that is powerful enough to express basic arithmetic cannot be both complete and consistent. This means that there will always be true statements in the system that cannot be proven within the system, and that the consistency of the system cannot be proven using a mechanical method. Gödel's incompleteness theorems had a profound impact on the philosophy of mathematics and showed that there are inherent limitations to what can be achieved through formalism.

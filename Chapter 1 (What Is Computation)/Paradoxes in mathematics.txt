@@ -1,0 +1,38 @@
+FILE 3
+[See the theory of how math led foundation to CS.txt file before coming here]
+
+PARADOXES IN MATHEMATICS:
+Around 1900, all the mathematicians were worried because paradoxes had appeared in mathematics.
+-> IS MATHS CONSISTENT? (no contradictions)
+-> IS MATHS COMPLETE? (every statement is either true or false)
+-> CAN IT BE MADE PERFECTLY LOGICAL? (can we find a mechanical method to determine the truth of any mathematical statement)
+-> CAN EVERY STATEMENT MECAHNICALLY PROVEN? (is there an algorithm that can determine whether any mathematical statement is true or false)
+
+PARADOXES:
+The true first start point is the attempt to build mathematics entirely from logic.
+
+-> Gottlieb Frege -> Believed mathematics  is just logic (Known as logicism)
+He proposed that all of mathematics could be derived from a small set of axioms and inference rules in logic. However, his system was found to be inconsistent due to Russell's paradox.
+
+-> Frege told  sets are just collections of objects. He defined a set as a collection of objects that satisfy a certain property. For example, the set of all even numbers is the collection of all numbers that are divisible by 2. 
+
+Sets are the collection of objects that satisfy a certain property. 
+{x / F(x)} = {x/g(x)} iff F(x) <-> g(x) for all x.
+
+RUSSELL'S PARADOX:
+In 1901, Bertrand Russell discovered a paradox in Frege's system. He considered the set of all sets that do not contain themselves. Does this set contain itself? If it does, then it does not contain itself. If it does not, then it does contain itself. This is a contradiction, and it shows that Frege's system is inconsistent.
+R = {x / x is a set and x does not contain itself}
+This breaks the Freges Basic law V: {x / F(x)} = {x/g(x)} iff F(x) <-> g(x) for all x.
+
+If a  system can prove contradictions : A <-> ~A, then it can prove anything. This is known as the principle of explosion. If a system is inconsistent, then it is not useful for mathematics.
+
+THIS  LED TO SAYING "MATHS IS INCONSISTENT" AND THIS WAS A CRISIS IN MATHEMATICS.
+
+THIS LED TO THREE MAJOR RESPONSES TO THE CRISIS:
+1. Logicism: The belief that mathematics can be reduced to logic. This was the view of Frege and Russell. However, this view was shown to be inconsistent due to Russell's paradox.
+
+2. Intuitionism: The belief that mathematics is a creation of the human mind and that mathematical objects do not exist independently of our mental constructions. This view was developed by L.E.J. Brouwer.
+
+3. Formalism: The belief that mathematics is a formal game played with symbols according to certain rules. This view was developed by David Hilbert.
+
+to be continued in the next file: 4

@@ -1,0 +1,8 @@
+FILE 1
+
+In the Chapter we are going to talk about what computation is.
+
+We need to ask ourselfs, what is computation? 
+that is the start of every algorithm, every program, every computer, and every software.!!!!
+
+What does it mean to be computable???

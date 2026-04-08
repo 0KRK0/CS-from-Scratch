@@ -1,0 +1,23 @@
+FILE 2
+[See the Questions led to CS.txt file before coming here]
+
+The question that created Computer Science is the question of computability.
+
+Before this era people know hoe to calculate, but nobody had a formal definition of computation,
+and this era answered it.
+-> Alan turing -> Turing machine -> computability
+-> Alonzo Church -> Lambda calculus -> computability
+
+CRISIS BACKGROUND:
+In the 1930s, there was a crisis in mathematics. Mathematicians were trying to find a solid foundation for all of mathematics, but they were running into problems. They were trying to find a way to prove that all mathematical statements were either true or false, but they were running into paradoxes and contradictions.
+
+David Hilbert, a famous mathematician, proposed -> every mathematical statement should be provable or disprovable using a mechanical method. This is known as Hilbert's program. He wanted to find a way to prove that all mathematical statements were either true or false, and that there was a mechanical method for doing so.
+
+This led to Universal Alogrithm -> is there an algorithm that can determine whetheer  any mathematical statement is true or false? This is known as the Entscheidungsproblem, or the decision problem. (En-t-chei-dungs - problem)
+
+HILBERT'S PROGRAM:
+Early in 1920's German mathematician Favid Hilbert  put forward a new proposal for the foundation of classical mathematics which has come to be known as Hibert's program. It is the foundation to the formation of all the mathematics in axiomatic form.
+
+Hilbert's goal: put all of the mathematics  on a complete and consistent solid logical foundation.
+
+BEFORE THIS YOU NEED TO KNOW THE HISTORY OF  PARADOXES IN MATHEMATICS: SEE FILE 3
