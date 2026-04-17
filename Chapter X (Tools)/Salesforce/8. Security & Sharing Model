@@ -1,0 +1,152 @@
+Security & Sharing Model (Salesforce)
+
+This layer defines who can see what data and what they can do with it. Salesforce security is built in layers, from broad access → fine-grained control.
+
+7.1 Object Level Security
+
+Controls what objects a user can access and what actions they can perform.
+
+Profiles
+Base level of access assigned to every user.
+Defines:
+Object permissions:
+Create
+Read
+Edit
+Delete (CRUD)
+Field-level security
+Login hours/IP restrictions
+One profile per user (mandatory)
+
+Example:
+
+Sales User → Read/Edit on Opportunity
+Support User → Read-only on Opportunity
+Permission Sets
+Used to extend access, not restrict.
+A user can have multiple permission sets.
+
+Why use them?
+
+Avoid creating too many profiles
+Provide flexible access
+
+Example:
+
+Profile: Read-only on Accounts
+Permission Set: Edit access → assigned only to specific users
+Key Concept
+Profiles = baseline
+Permission Sets = additional permissions
+7.2 Field Level Security (FLS)
+
+Controls visibility of individual fields within an object.
+
+Two Controls:
+Visible / Hidden
+Read-Only / Editable
+Example:
+Salary field:
+HR → Visible & Editable
+Manager → Visible (Read-only)
+Employee → Hidden
+Important Notes:
+FLS overrides page layouts
+Even if field is on UI → if FLS denies → user cannot see it
+Applies to:
+UI
+Reports
+API
+7.3 Record Level Security
+
+Controls which specific records a user can access.
+
+OWD (Org-Wide Defaults)
+
+Baseline level of record access.
+
+Setting	Meaning
+Private	Only owner can access
+Public Read Only	Others can view
+Public Read/Write	Full access
+Controlled by Parent	Inherited
+Example:
+Account OWD = Private
+→ Only owner can see their accounts
+Role Hierarchy
+Provides vertical access
+Higher roles can see records owned by lower roles
+
+Example:
+
+CEO
+→ Sales Manager
+→ Sales Rep
+
+CEO can see everything below.
+
+Sharing Rules
+Provide automatic access between groups
+Types:
+Owner-based
+Criteria-based
+Example:
+Share all Accounts where Region = "South" with Support Team
+Manual Sharing
+Record owner can share a specific record manually
+Key Idea:
+OWD = baseline
+Role Hierarchy = vertical access
+Sharing Rules = horizontal access
+7.4 Apex Security
+
+When using Apex, Salesforce does NOT enforce security automatically → you must handle it.
+
+with sharing / without sharing
+with sharing
+Enforces:
+Record-level security
+Respects:
+OWD
+Sharing rules
+public with sharing class MyClass {
+}
+without sharing
+Ignores record-level security
+Runs in system context
+public without sharing class MyClass {
+}
+Key Difference:
+Mode	Record Access
+with sharing	Respects user access
+without sharing	Full access (system mode)
+stripInaccessible()
+
+Used to enforce:
+
+Field-level security
+Object-level security
+Example:
+List<Account> accs = [SELECT Name FROM Account];
+
+SObjectAccessDecision decision = Security.stripInaccessible(
+    AccessType.READABLE,
+    accs
+);
+
+List<Account> safeList = decision.getRecords();
+What it does:
+Removes fields user should not access
+Prevents security violations in Apex
+Final Layered View (Very Important)
+1. Object Level → Can user access object?
+2. Field Level → Can user see/edit fields?
+3. Record Level → Can user access this record?
+4. Apex Security → Enforce all above in code
+Interview Insight
+Most common mistake:
+→ “Apex respects security by default” ❌ (Wrong)
+Correct:
+→ You must explicitly enforce security using:
+with sharing
+stripInaccessible()

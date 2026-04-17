@@ -1,0 +1,325 @@
+4. Lightning Web Components (LWC)
+
+Lightning Web Components (LWC) is a modern UI framework in Salesforce built on web standards like ES6+, Custom Elements, and Shadow DOM. It follows a component-based architecture and is optimized for performance.
+
+4.1 Basics
+Component Structure (HTML, JS, XML)
+
+Every LWC consists of three core files:
+
+File	Purpose
+.html	Defines UI (template)
+.js	Handles logic
+.js-meta.xml	Metadata configuration (exposure, targets)
+
+Example:
+
+<!-- helloWorld.html -->
+<template>
+    <h1>Hello {name}</h1>
+</template>
+// helloWorld.js
+import { LightningElement } from 'lwc';
+
+export default class HelloWorld extends LightningElement {
+    name = 'Raj';
+}
+<!-- helloWorld.js-meta.xml -->
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>59.0</apiVersion>
+    <isExposed>true</isExposed>
+    <targets>
+        <target>lightning__AppPage</target>
+    </targets>
+</LightningComponentBundle>
+Reactive Properties
+
+LWC automatically tracks changes in properties and updates the UI.
+
+Primitive fields (string, number, boolean) → reactive by default
+Objects/arrays → require care (mutation vs reassignment)
+
+Key concept:
+
+this.name = 'New Value'; // triggers re-render
+
+Old decorator (rare now):
+
+@track obj = {};
+4.2 Data Handling
+@wire (Reactive Data Fetching)
+Automatically calls Apex or Salesforce APIs
+Reactive when parameters change
+import getAccounts from '@salesforce/apex/AccountController.getAccounts';
+import { wire } from 'lwc';
+
+@wire(getAccounts)
+accounts;
+Imperative Apex Calls
+Called manually (button click, event)
+Better control over execution
+import getAccounts from '@salesforce/apex/AccountController.getAccounts';
+
+handleClick() {
+    getAccounts()
+        .then(result => {
+            this.accounts = result;
+        })
+        .catch(error => {
+            console.error(error);
+        });
+}
+Lightning Data Service (LDS)
+No Apex required
+Uses standard UI API
+Handles caching, security automatically
+
+Example:
+
+import { getRecord } from 'lightning/uiRecordApi';
+4.3 Events
+Custom Events (Child → Parent Communication)
+// child.js
+this.dispatchEvent(new CustomEvent('myevent', {
+    detail: { message: 'Hello Parent' }
+}));
+<!-- parent.html -->
+<c-child onmyevent={handleEvent}></c-child>
+handleEvent(event) {
+    console.log(event.detail.message);
+}
+Pub-Sub Pattern
+Used for communication between unrelated components
+Works when components don’t have direct hierarchy
+
+Typical use:
+
+Utility JS module acts as event bus
+4.4 Lifecycle Hooks
+
+Lifecycle hooks control component execution stages.
+
+connectedCallback()
+Called when component is inserted into DOM
+Used for initialization, API calls
+connectedCallback() {
+    console.log('Component loaded');
+}
+renderedCallback()
+Called after every render
+Useful for DOM manipulation
+renderedCallback() {
+    console.log('Rendered');
+}
+
+Important:
+Avoid infinite loops (don’t update reactive data here blindly).
+
+4.5 Navigation & UI
+NavigationMixin
+
+Used for navigating between pages, records, apps.
+
+import { NavigationMixin } from 'lightning/navigation';
+
+export default class Example extends NavigationMixin(LightningElement) {
+    navigateToRecord() {
+        this[NavigationMixin.Navigate]({
+            type: 'standard__recordPage',
+            attributes: {
+                recordId: '001XXXXXXXXXXXX',
+                objectApiName: 'Account',
+                actionName: 'view'
+            }
+        });
+    }
+}
+Toast Messages
+
+Used to show notifications.
+
+import { ShowToastEvent } from 'lightning/platformShowToastEvent';
+
+this.dispatchEvent(
+    new ShowToastEvent({
+        title: 'Success',
+        message: 'Record Created',
+        variant: 'success'
+    })
+);
+SLDS (Salesforce Lightning Design System)
+Provides standard UI styling
+Ensures consistency across Salesforce apps
+
+Example:
+
+<div class="slds-box slds-theme_default">
+    Styled Content
+</div>
+Key Summary
+LWC = modern, fast, standards-based framework
+Data handling → @wire, Imperative, LDS
+Communication → Events & Pub-Sub
+Lifecycle → connectedCallback, renderedCallback
+UI → NavigationMixin, Toast, SLDS
+
+
+4.6 Advanced Lightning Web Components (LWC)
+
+This section focuses on deeper concepts required for real-world development, architecture design, and interviews.
+
+4.6.1 Decorators Deep Dive
+
+Decorators define how properties behave in LWC.
+
+@api (Public Properties & Methods)
+Exposes properties/methods to parent components
+Enables parent → child communication
+import { LightningElement, api } from 'lwc';
+
+export default class Child extends LightningElement {
+    @api message;
+
+    @api publicMethod() {
+        console.log('Called from parent');
+    }
+}
+
+Usage in Parent:
+
+<c-child message="Hello"></c-child>
+@track (Reactivity for Objects)
+Tracks changes in objects/arrays (legacy but still relevant conceptually)
+import { LightningElement, track } from 'lwc';
+
+@track user = { name: 'Raj' };
+
+updateName() {
+    this.user.name = 'Kumar'; // may not trigger re-render reliably
+    this.user = { ...this.user }; // safe approach
+}
+@wire (Advanced Usage)
+
+Supports both property binding and function handling.
+
+@wire(getAccounts)
+wiredAccounts({ error, data }) {
+    if (data) {
+        this.accounts = data;
+    } else if (error) {
+        console.error(error);
+    }
+}
+
+Reactive parameters:
+
+@wire(getAccounts, { industry: '$industry' })
+accounts;
+4.6.2 Component Communication (Complete)
+1. Parent → Child
+
+Using @api
+
+<c-child message={parentMsg}></c-child>
+2. Child → Parent
+
+Using Custom Events
+
+this.dispatchEvent(new CustomEvent('notify', {
+    detail: { value: 'Data' }
+}));
+3. Unrelated Components
+Pub-Sub (Legacy Approach)
+Uses shared JS module
+Lightning Message Service (Recommended)
+Works across:
+LWC
+Aura
+Visualforce
+import { publish, MessageContext } from 'lightning/messageService';
+4.6.3 Performance Optimization
+Key Strategies
+1. Minimize Apex Calls
+Use caching (@AuraEnabled(cacheable=true))
+Prefer @wire when possible
+2. Efficient Rendering
+Avoid unnecessary re-renders
+Use conditional rendering:
+<template if:true={isVisible}>
+3. List Rendering Optimization
+
+Always use key:
+
+<template for:each={accounts} for:item="acc">
+    <div key={acc.Id}>{acc.Name}</div>
+</template>
+4. Lazy Loading
+
+Load components/data only when needed (tabs, modals)
+
+4.6.4 LWC vs Aura
+Feature	LWC	Aura
+Performance	Fast (native JS)	Slower
+Syntax	Modern (ES6+)	Custom
+Debugging	Easier	Complex
+Future	Recommended	Legacy
+
+Conclusion:
+
+Always prefer LWC unless Aura is specifically required
+4.6.5 Security
+Locker Service / Lightning Web Security (LWS)
+
+Salesforce enforces strict security isolation.
+
+Key Concepts:
+DOM isolation (Shadow DOM)
+No direct global access (window/document restrictions)
+Secure communication between components
+Best Practices
+Avoid direct DOM manipulation
+Use standard APIs
+Never trust client-side data
+4.6.6 Error Handling in LWC
+Client-side Errors
+try {
+    // logic
+} catch (error) {
+    console.error(error);
+}
+Apex Errors
+getAccounts()
+    .then(result => {})
+    .catch(error => {
+        this.error = error.body.message;
+    });
+4.6.7 Testing (LWC Jest)
+Salesforce uses Jest for unit testing
+import { createElement } from 'lwc';
+import MyComponent from 'c/myComponent';
+
+What to test:
+
+Rendering
+Events
+Data handling
+User interactions
+4.6.8 Real-World Patterns
+1. Container vs Presentational Components
+Container → handles logic, data
+Presentational → UI only
+2. Reusable Components
+Buttons
+Modals
+Data tables
+3. Service Layer Pattern
+Centralized Apex calls
+Shared utility modules
+Final Summary
+
+Advanced LWC revolves around:
+
+Controlled communication (@api, events, LMS)
+Performance optimization
+Secure coding practices
+Clean architecture patterns

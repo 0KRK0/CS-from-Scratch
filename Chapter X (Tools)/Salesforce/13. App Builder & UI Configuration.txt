@@ -1,0 +1,161 @@
+App Builder & UI Configuration
+
+This section is critical for real-world Salesforce development, because UI configuration directly impacts usability, performance, and maintainability. As a developer, you’re expected to design scalable, dynamic, and role-based UI experiences, not just drag-and-drop layouts.
+
+12.1 Lightning App Builder
+
+Lightning App Builder is a metadata-driven UI composition tool used to create dynamic, responsive pages without code.
+
+Core Concept
+Built on component-based architecture
+Uses:
+Standard components (Record Detail, Highlights Panel)
+Custom components (LWC / Aura)
+Fully context-aware (user, profile, device, record type)
+Page Types
+1. Record Pages
+
+Used to customize how a specific object record is displayed.
+
+Key Components
+Highlights Panel
+Record Details
+Related Record
+Tabs / Accordion
+Custom LWCs
+8
+Advanced Features
+Dynamic Forms (IMPORTANT)
+Move fields directly onto the page (no page layout dependency)
+Conditional visibility:
+Based on field values
+User profile
+Record type
+
+Example:
+
+Show "Approval Status" only if Stage = 'Closed Won'
+Component Visibility Rules
+Filter components using:
+User role
+Profile
+Field values
+Device type
+Tabs vs Accordion
+Tabs → better for wide layouts
+Accordion → better for vertical scrolling UX
+2. Home Pages
+
+Customizes the landing page for users.
+
+Use Cases
+Show:
+Tasks
+Events
+Performance charts
+Assistant insights
+7
+Best Practices
+Keep it role-specific
+Avoid clutter → prioritize actionable info
+Use dashboards for visualization
+Assignment Strategy
+
+You can assign pages based on:
+
+App
+Profile
+Combination (App + Profile)
+
+Example:
+
+Sales App → Sales Record Page
+Support App → Case-focused layout
+12.2 Page Layouts
+
+Page Layouts define:
+
+Field organization
+Field properties (Read-only, Required)
+Related lists
+
+They are older but still foundational, especially when:
+
+Dynamic Forms are NOT used
+Mobile experience depends on them
+Sections
+
+Sections help organize fields logically.
+
+Types of Sections
+1-column
+2-column
+4-column (rare, not recommended)
+7
+Best Practices
+Group by business logic, not just field type
+Example:
+Customer Info
+Financial Details
+Approval Info
+Avoid:
+Overcrowded sections
+Deep nesting
+Related Lists
+
+Displays child records connected via relationships.
+
+Examples
+Account → Contacts
+Opportunity → Products
+Case → Activities
+6
+Customization Options
+Choose fields to display
+Sort order
+Buttons (New, Edit, Delete)
+Limit number of records shown
+Advanced Concepts (Developer-Level)
+1. Page Layout vs Lightning Record Page
+Feature	Page Layout	Lightning Record Page
+Field placement	Static	Dynamic
+Visibility rules	Limited	Advanced
+Custom components	No	Yes (LWC/Aura)
+Personalization	No	Yes
+
+Conclusion:
+
+Use Lightning Record Page + Dynamic Forms for modern UI
+Page Layout = fallback / legacy dependency
+2. Performance Considerations
+Avoid too many components (slow rendering)
+Use tabs to lazy-load content
+Limit related lists
+Avoid heavy LWCs on initial load
+3. Real-World Pattern
+
+For enterprise apps:
+
+Lightning Page → UI composition
+Dynamic Forms → Field control
+LWC → Custom business logic
+Apex → Backend
+4. Common Interview Traps
+“Can we remove page layouts completely?”
+No → still needed for:
+Mobile
+Some standard components
+Related lists behavior
+“Dynamic Forms supported everywhere?”
+No → limited support on some objects
+Production Best Practices
+Always design UI based on:
+User persona
+Business workflow
+Use:
+Dynamic visibility
+Minimalistic layout
+Avoid:
+Dumping all fields on one page
+Think:
+Speed + clarity + scalability

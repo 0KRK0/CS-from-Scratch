@@ -1,0 +1,169 @@
+Reports & Dashboards
+11.1 Reports
+
+Salesforce Reports are structured queries on your data model that allow filtering, grouping, and aggregation without writing code.
+
+Report Fundamentals
+Report Type → Defines which objects and fields are available
+Filters → Control which records are included
+Columns → Fields displayed
+Grouping → Enables aggregation (SUM, COUNT, AVG, etc.)
+Formulas → Derived calculations at row or summary level
+Types of Reports
+1. Tabular Reports
+
+Definition:
+The simplest report format — a flat list of records (like a spreadsheet).
+
+Characteristics:
+
+No grouping
+No subtotals (unless using row limits)
+Best for quick data extraction
+
+Use Cases:
+
+Exporting data
+Simple record lists (e.g., all open Leads)
+
+Example:
+
+SELECT Name, Status, CreatedDate FROM Lead
+2. Summary Reports
+
+Definition:
+Reports that group records by one or more fields.
+
+Characteristics:
+
+Supports grouping (e.g., by Stage, Owner)
+Provides subtotals and aggregates
+Most commonly used report type
+
+Features:
+
+Group rows
+Add summary formulas
+Create charts
+
+Use Cases:
+
+Sales pipeline by stage
+Revenue by region
+
+Example:
+
+Group Opportunities by Stage
+Show SUM(Amount) per stage
+3. Matrix Reports
+
+Definition:
+Reports that group data both row-wise and column-wise (like a pivot table).
+
+Characteristics:
+
+Two-dimensional grouping
+Advanced data comparison
+Supports complex summaries
+
+Use Cases:
+
+Revenue by Region (rows) and Quarter (columns)
+Performance analysis
+
+Example Structure:
+
+Rows → Region
+Columns → Quarter
+Values → SUM(Amount)
+Key Advanced Concepts
+1. Bucket Fields
+Categorize data without creating new fields
+Example: Group Amount into ranges (0–10K, 10K–50K)
+2. Row-Level Formulas
+Apply logic per record
+Example:
+IF(Amount > 50000, "High", "Low")
+3. Cross Filters
+Filter based on related records
+Example:
+Accounts with Opportunities
+Accounts without Cases
+4. Joined Reports
+Combine multiple report blocks
+Useful for side-by-side comparison
+11.2 Dashboards
+
+Dashboards are visual representations of report data using charts and components.
+
+Dashboard Fundamentals
+Based on source reports
+Displayed as visual components
+Can be real-time or refreshed manually/scheduled
+Dashboard Components
+1. Chart Components
+Bar Chart
+Line Chart
+Pie Chart
+Donut Chart
+Funnel Chart
+
+Usage:
+
+Trend analysis
+Distribution visualization
+2. Metric Component
+Displays a single key value
+
+Example:
+
+Total Revenue = ₹10 Cr
+3. Gauge Component
+Shows performance against a target
+
+Example:
+
+Target: ₹1 Cr
+Current: ₹75L
+4. Table Component
+Displays summarized data in tabular form
+Dashboard Filters
+Allow users to dynamically filter dashboard data
+Example:
+Filter by Region
+Filter by Sales Rep
+Dynamic Dashboards
+Definition:
+
+A dashboard that runs based on the current logged-in user’s permissions and data access.
+
+Why Important:
+
+Without dynamic dashboards:
+
+Data is shown based on the dashboard creator
+
+With dynamic dashboards:
+
+Each user sees their own data
+Example:
+User Role	Visible Data
+Sales Rep	Only their Opportunities
+Manager	Team Opportunities
+Key Constraints:
+Limited number of dynamic dashboards (depends on edition)
+Cannot schedule refresh (in most cases)
+When to Use What
+Requirement	Use
+Simple data listing	Tabular Report
+Aggregated insights	Summary Report
+Multi-dimensional analysis	Matrix Report
+Visual monitoring	Dashboard
+Personalized data view	Dynamic Dashboard
+Real-World Architecture Insight (Important for Interviews)
+Reports operate on Report Types (metadata layer)
+Dashboards are presentation layer (UI abstraction)
+Heavy reports can impact performance → use filters and indexed fields
+Large datasets → consider:
+Custom report types
+Async processing (for very large data)

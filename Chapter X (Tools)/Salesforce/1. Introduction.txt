@@ -1,0 +1,198 @@
+🧠 1. Salesforce Platform Fundamentals
+1.1 Architecture
+Multi-tenant architecture
+Metadata-driven development
+MVC pattern (Model-View-Controller in Salesforce)
+1.2 Environment Types
+Production
+Sandboxes:
+Developer
+Developer Pro
+Partial Copy
+Full
+1.3 Salesforce Editions
+Developer, Enterprise, Unlimited
+
+🧩 2. Data Model & Database Layer
+2.1 Objects
+Standard Objects
+Custom Objects
+External Objects
+Big Objects
+2.2 Fields & Data Types
+Text, Number, Date, Formula
+Picklists (dependent picklists)
+Auto Number
+2.3 Relationships
+Lookup
+Master-Detail
+Many-to-Many (Junction Object)
+Self Relationship
+2.4 Schema Design
+Normalization vs Denormalization
+Data integrity
+Roll-up summary fields
+
+
+⚡ 3. Apex Programming
+3.1 Core Apex
+Classes & Methods
+Variables & Data Types
+Access Modifiers
+3.2 Collections
+List
+Set
+Map
+3.3 SOQL & SOSL
+Select queries
+Aggregate queries
+Relationship queries
+3.4 Triggers
+Before vs After
+Trigger Context Variables
+Trigger Order of Execution
+Trigger Frameworks
+3.5 Governor Limits
+Limits overview
+Best practices to avoid limits
+3.6 Exception Handling
+Try-Catch
+Custom Exceptions
+3.7 Asynchronous Apex
+Future Methods
+Queueable Apex
+Batch Apex
+Scheduled Apex
+🔄 4. Lightning Web Components (LWC)
+4.1 Basics
+Component structure (HTML, JS, XML)
+Reactive properties
+4.2 Data Handling
+@wire
+Imperative Apex calls
+Lightning Data Service
+4.3 Events
+Custom events
+Pub-sub pattern
+4.4 Lifecycle Hooks
+connectedCallback
+renderedCallback
+4.5 Navigation & UI
+NavigationMixin
+Toast messages
+SLDS (Styling)
+🧱 5. Aura Components (Legacy but still asked)
+5.1 Basics
+Component structure
+Attributes
+5.2 Client-Side Controller
+JS controller
+Helper
+5.3 Server-Side Calls
+Apex controller
+🔗 6. Integration & APIs
+6.1 APIs
+REST API
+SOAP API
+Bulk API
+6.2 Callouts
+HTTP callouts in Apex
+JSON parsing
+6.3 Authentication
+OAuth 2.0
+Named Credentials
+6.3 Integration Patterns
+Request-Reply
+Fire-and-forget
+Batch integration
+🔐 7. Security & Sharing Model
+7.1 Object Level Security
+Profiles
+Permission Sets
+7.2 Field Level Security
+Visibility control
+7.3 Record Level Security
+OWD (Org Wide Defaults)
+Role Hierarchy
+Sharing Rules
+Manual Sharing
+7.4 Apex Security
+with sharing / without sharing
+stripInaccessible
+🔄 8. Automation Tools
+8.1 Declarative Automation
+Workflow Rules
+Process Builder (deprecated but asked)
+Flow (IMPORTANT)
+8.2 Flow Types
+Record-triggered
+Screen flows
+Scheduled flows
+8.3 When to use Flow vs Apex
+Decision making
+🧪 9. Testing & Debugging
+9.1 Test Classes
+Structure
+Test data creation
+9.2 Code Coverage
+75% requirement
+Meaningful coverage
+9.3 Advanced Testing
+Test.startTest / stopTest
+Mock callouts
+9.4 Debugging
+Debug logs
+System.debug
+Developer Console
+📦 10. Deployment & DevOps
+10.1 Deployment Methods
+Change Sets
+SFDX
+10.2 Version Control
+Git basics
+10.3 CI/CD
+Pipelines
+Automated deployment
+📊 11. Reports & Dashboards
+11.1 Reports
+Tabular
+Summary
+Matrix
+11.2 Dashboards
+Components
+Dynamic dashboards
+📁 12. App Builder & UI Configuration
+12.1 Lightning App Builder
+Record pages
+Home pages
+12.2 Page Layouts
+Sections
+Related lists
+🌐 13. Advanced Topics (Big Differentiator)
+13.1 Performance Optimization
+Query optimization
+Caching
+13.2 Large Data Volume (LDV)
+Indexing
+Selectivity
+13.3 Platform Events
+Event-driven architecture
+13.4 Custom Metadata & Custom Settings
+Config-driven development
+🧠 14. Real-World Design Patterns
+14.1 Trigger Frameworks
+One trigger per object
+14.2 Layered Architecture
+Controller → Service → DAO
+14.3 Best Practices
+Avoid SOQL in loops
+Bulk-safe code
+🎯 15. Interview-Focused Topics (MOST IMPORTANT)
+15.1 Scenario Questions
+Bulk processing
+Data consistency
+15.2 Debugging Questions
+Production issue handling
+15.3 Project Explanation
+End-to-end architecture
+Challenges + solutions

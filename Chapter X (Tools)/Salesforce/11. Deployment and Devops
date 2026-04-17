@@ -1,0 +1,217 @@
+0. Deployment & DevOps (Salesforce – Production Grade)
+
+This is where most developers fail interviews—not because they don’t know Apex, but because they don’t understand how code safely reaches production.
+
+10.1 Deployment Methods
+A. Change Sets (Declarative / Legacy but Still Used)
+What it is
+
+A UI-based deployment tool inside Salesforce used to move metadata between orgs (Sandbox → Production).
+
+Types
+Outbound Change Set → From Sandbox
+Inbound Change Set → Into Target Org
+How it works
+Create Change Set in Sandbox
+Add components (Apex, Objects, Flows, etc.)
+Upload to target org
+Validate → Deploy
+Pros
+No coding required
+Safe for admins
+Built-in dependency checker
+Cons (IMPORTANT)
+Not version-controlled
+Manual & error-prone
+No rollback
+Not scalable for teams
+When to use
+Small orgs
+Admin-driven changes
+Quick fixes
+B. Salesforce DX (Modern Standard)
+
+Core tool: Salesforce DX
+
+What it is
+
+CLI-based development + deployment model using source-driven development
+
+Key Concepts
+1. Scratch Orgs
+Temporary dev environments
+Created via CLI
+Fully configurable via JSON
+sfdx force:org:create -f project-scratch-def.json
+2. Source Format
+Metadata stored as files (not zipped XML like old days)
+Works with Git
+3. CLI Deployment
+sfdx force:source:deploy -p force-app
+Pros
+Version control friendly
+Automation ready
+Supports CI/CD
+Team collaboration
+Cons
+Learning curve
+Requires setup
+When to use
+Any serious team
+Enterprise projects
+CI/CD pipelines
+C. Metadata API (Under the hood)
+
+Used by:
+
+Change Sets
+SFDX
+Tools like Workbench
+Deployment Command Example
+sfdx force:mdapi:deploy -d mdapi_output -w 10
+10.2 Version Control (Git – Mandatory)
+
+Core tool: Git
+
+If you’re not using Git → you are not production-ready.
+
+A. Why Git in Salesforce?
+Track changes
+Collaboration
+Rollback capability
+CI/CD integration
+B. Basic Workflow
+git init
+git add .
+git commit -m "Initial commit"
+C. Branching Strategy (Production Standard)
+1. Main Branches
+main → Production
+develop → Integration
+2. Supporting Branches
+feature/*
+release/*
+hotfix/*
+Example Flow
+feature/login → develop → release/v1 → main
+D. Best Practices
+One feature per branch
+Small commits
+Meaningful commit messages
+Pull Request reviews mandatory
+10.3 CI/CD (Critical for Real Companies)
+
+CI/CD = Continuous Integration + Continuous Deployment
+
+A. What is CI/CD?
+
+Automated pipeline that:
+
+Pulls code from Git
+Runs tests
+Validates deployment
+Deploys automatically
+B. Popular Tools
+GitHub Actions
+Jenkins
+GitLab CI/CD
+C. Typical Pipeline Flow
+Developer pushes code → GitHub
+        ↓
+Pipeline triggers
+        ↓
+Run Apex Tests
+        ↓
+Static Code Analysis
+        ↓
+Deploy to Sandbox
+        ↓
+UAT Approval
+        ↓
+Deploy to Production
+D. Example GitHub Actions Pipeline
+name: Salesforce CI
+
+on:
+  push:
+    branches: [develop]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: Install Salesforce CLI
+        run: npm install -g sfdx-cli
+
+      - name: Authenticate Org
+        run: sfdx auth:web:login
+
+      - name: Deploy
+        run: sfdx force:source:deploy -p force-app
+
+      - name: Run Tests
+        run: sfdx force:apex:test:run --resultformat human
+E. Deployment Strategies
+1. Validate First (MANDATORY)
+sfdx force:source:deploy -c
+Checks deployment without committing
+2. Run Tests
+
+Salesforce requirement:
+
+Minimum 75% coverage
+No failing tests
+3. Quick Deploy
+Use validation result to deploy instantly
+F. Advanced DevOps Concepts
+1. Automated Testing
+Unit tests (Apex)
+Integration tests
+2. Static Code Analysis
+PMD
+ESLint (for LWC)
+3. Environment Strategy
+Environment	Purpose
+Dev Sandbox	Development
+QA Sandbox	Testing
+UAT	Business validation
+Prod	Live
+4. Release Management
+Scheduled deployments
+Rollback plan (via Git, not Salesforce)
+Real-World Architecture (Enterprise)
+Developer → Scratch Org
+        ↓
+Commit → Git
+        ↓
+CI Pipeline (GitHub Actions / Jenkins)
+        ↓
+Deploy → QA Sandbox
+        ↓
+UAT Approval
+        ↓
+Production Deployment
+Interview-Level Summary (What They Expect)
+
+If interviewer asks:
+
+"How do you deploy in Salesforce?"
+
+Answer like this:
+
+For small changes → Change Sets
+For real projects → SFDX + Git
+CI/CD pipelines for automation
+Always validate + run tests before deploy
+Follow branching strategy and code reviews
+What You Should Master Next
+
+To be top 1% Salesforce dev, you must combine this with:
+
+Apex Testing (you already started)
+Security (with sharing, FLS)
+Integration deployments (API-based CI)

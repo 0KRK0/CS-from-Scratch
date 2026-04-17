@@ -1,0 +1,219 @@
+14. Real-World Design Patterns (Deep Dive)
+
+You’re now entering the “senior developer” zone of Salesforce — this is where architecture, limits, and execution flow matter more than syntax.
+
+14.1 Trigger Frameworks (Production-Level)
+Why “One Trigger Per Object” is Mandatory
+Salesforce does NOT guarantee trigger execution order
+Multiple triggers = race conditions + unpredictable bugs
+Standard Pattern
+trigger AccountTrigger on Account (before insert, before update, after insert, after update) {
+    AccountTriggerHandler handler = new AccountTriggerHandler();
+
+    if (Trigger.isBefore) {
+        if (Trigger.isInsert) handler.beforeInsert(Trigger.new);
+        if (Trigger.isUpdate) handler.beforeUpdate(Trigger.new, Trigger.oldMap);
+    }
+
+    if (Trigger.isAfter) {
+        if (Trigger.isInsert) handler.afterInsert(Trigger.new);
+        if (Trigger.isUpdate) handler.afterUpdate(Trigger.new, Trigger.oldMap);
+    }
+}
+Handler Class (Separation of Logic)
+public class AccountTriggerHandler {
+    public void beforeInsert(List<Account> newRecords) {
+        // logic
+    }
+
+    public void afterInsert(List<Account> newRecords) {
+        // logic
+    }
+}
+Why This Matters
+Clean separation
+Testable
+Extensible
+Prevents spaghetti triggers
+14.2 Layered Architecture (Controller → Service → DAO)
+
+This is CRITICAL for enterprise systems.
+
+Architecture Layers
+1. Controller Layer
+Entry point (LWC / Aura / API / Trigger)
+Minimal logic
+public with sharing class AccountController {
+    @AuraEnabled
+    public static void createAccount(String name) {
+        AccountService.createAccount(name);
+    }
+}
+2. Service Layer (Business Logic)
+Core logic lives here
+public class AccountService {
+    public static void createAccount(String name) {
+        Account acc = new Account(Name = name);
+        AccountDAO.insertAccount(acc);
+    }
+}
+3. DAO Layer (Database Access)
+Handles all DML + SOQL
+public class AccountDAO {
+    public static void insertAccount(Account acc) {
+        insert acc;
+    }
+}
+Why This Architecture is Powerful
+Reusable logic
+Easy testing (mock DAO)
+Scales to large systems
+Aligns with enterprise design patterns
+14.3 Governor Limits (VERY IMPORTANT)
+
+Think of Salesforce as a shared system (multi-tenant).
+
+👉 Limits prevent one org from killing the entire platform.
+
+Core Governor Limits (Must Know)
+Limit	Value
+SOQL Queries	100
+DML Statements	150
+CPU Time	10,000 ms
+Heap Size	6 MB
+Callouts	100
+Records in Query	50,000
+Why Limits Exist
+Salesforce runs thousands of orgs on same servers
+Without limits → system crash
+Classic BAD Code (Never Do This)
+for (Account acc : Trigger.new) {
+    Contact con = [SELECT Id FROM Contact WHERE AccountId = :acc.Id];
+}
+
+❌ SOQL inside loop → hits limit instantly
+
+Correct Bulk-Safe Version
+Set<Id> accIds = new Set<Id>();
+
+for (Account acc : Trigger.new) {
+    accIds.add(acc.Id);
+}
+
+Map<Id, Contact> contactsMap = new Map<Id, Contact>(
+    [SELECT Id, AccountId FROM Contact WHERE AccountId IN :accIds]
+);
+Bulkification Principles
+Always assume 200 records per transaction
+Use:
+List
+Set
+Map
+Advanced Limits Awareness
+1. CPU Time Limit
+Most dangerous limit
+Happens due to:
+Nested loops
+Complex logic
+recursion
+2. Heap Size
+Avoid large collections
+Use selective queries
+3. Query Selectivity (LDV topic)
+Use indexed fields
+Avoid full table scans
+14.4 Flow of Database Operations (CRITICAL – Interview Favorite)
+
+This is THE MOST IMPORTANT concept.
+
+Order of Execution (Insert/Update Flow)
+Step-by-Step Flow
+1. System Validation
+Required fields
+Field formats
+2. Before Triggers
+Modify data before saving
+trigger AccountTrigger on Account (before insert) {
+    for (Account acc : Trigger.new) {
+        acc.Name = acc.Name + ' - Updated';
+    }
+}
+3. Custom Validation Rules
+Business validations
+4. Duplicate Rules
+Prevent duplicate records
+5. Save to Database (Not Committed Yet)
+6. After Triggers
+Use for:
+Creating related records
+Callouts (async preferred)
+7. Assignment Rules
+Lead/Case assignment
+8. Auto-Response Rules
+9. Workflow Rules
+Field updates
+Email alerts
+10. Process Builder / Flow
+Modern automation engine
+11. Escalation Rules
+12. Roll-up Summary Fields
+Parent calculations
+13. Commit to Database (FINAL)
+14. Post-Commit Logic
+Emails sent
+Async Apex (Queueable/Future)
+Visualization of Flow
+User/API Input
+   ↓
+System Validation
+   ↓
+Before Trigger
+   ↓
+Validation Rules
+   ↓
+Duplicate Rules
+   ↓
+Save (Temporary)
+   ↓
+After Trigger
+   ↓
+Automation (Workflow/Flow)
+   ↓
+Rollups
+   ↓
+Commit
+   ↓
+Async Jobs
+Key Interview Insights (Important)
+1. Before vs After Trigger
+Type	Use Case
+Before	Modify data
+After	Related records / external actions
+2. Why No DML in Before Trigger?
+Record not saved yet
+Direct modification is faster
+3. Recursive Trigger Problem
+update accounts;
+
+Inside trigger → causes infinite loop
+
+Solution:
+Static variables
+4. Mixed Automation Problem
+
+If you use:
+
+Trigger + Flow + Workflow
+
+👉 Execution becomes complex → debugging nightmare
+
+Real-World Advice (From Experience)
+Prefer:
+Trigger → Service Layer → DAO
+Keep:
+Triggers thin
+Logic centralized
+Always design for:
+Bulk
+Limits
+Maintainability

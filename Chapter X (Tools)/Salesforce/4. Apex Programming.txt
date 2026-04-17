@@ -1,0 +1,340 @@
+3. Apex Programming
+
+Apex is a strongly typed, object-oriented programming language developed by Salesforce for executing flow and transaction control statements on its platform. It runs on the Lightning Platform and is tightly integrated with the database (via SOQL/SOSL) and metadata layer.
+
+3.1 Core Apex
+Classes & Methods
+Class: Blueprint for objects; contains variables and methods.
+Method: A function defined inside a class.
+public class AccountService {
+    public static void createAccount(String name) {
+        Account acc = new Account(Name = name);
+        insert acc;
+    }
+}
+Key Concepts
+static → Belongs to class, not instance
+void → No return type
+return → Used to return values
+Variables & Data Types
+Primitive Data Types
+Integer, Double, Long
+String
+Boolean
+Date, Datetime
+Id
+Integer count = 10;
+String name = 'Raj';
+Boolean isActive = true;
+Non-Primitive Data Types
+sObjects (Account, Contact)
+Collections (List, Set, Map)
+Custom Classes
+Access Modifiers:
+Modifier-------	Scope
+private     	Within class only
+public      	Accessible everywhere
+protected	    Within class & subclasses
+global	        Across namespaces (used in managed packages)
+public class Demo {
+    private Integer x;
+    public void show() {}
+}
+
+3.2 Collections
+
+Collections are used to handle multiple records efficiently.
+
+List
+Ordered collection
+Allows duplicates
+List<String> names = new List<String>{'A','B','A'};
+Set
+Unordered
+No duplicates
+Set<String> uniqueNames = new Set<String>{'A','B','A'}; // A,B
+Map
+Key-value pairs
+Map<Id, Account> accMap = new Map<Id, Account>();
+When to Use What
+Scenario	Collection
+Ordered data	List
+Unique values	Set
+Fast lookup	Map
+3.3 SOQL & SOSL
+SOQL (Salesforce Object Query Language)
+
+Used to fetch records from database.
+
+Select Queries
+List<Account> accs = [SELECT Id, Name FROM Account];
+Aggregate Queries
+AggregateResult[] results = [
+    SELECT COUNT(Id), Industry 
+    FROM Account 
+    GROUP BY Industry
+];
+Relationship Queries
+Parent → Child
+SELECT Name, (SELECT LastName FROM Contacts) FROM Account
+Child → Parent
+SELECT Name, Account.Name FROM Contact
+SOSL (Search Across Objects)
+List<List<SObject>> results = [
+    FIND 'Raj' IN ALL FIELDS RETURNING Account, Contact
+];
+SOQL vs SOSL
+Feature	SOQL	SOSL
+Search type	Structured	Text-based
+Multiple objects	No	Yes
+Use case	Exact queries	Global search
+3.4 Triggers
+
+Triggers execute automatically in response to database events.
+
+trigger AccountTrigger on Account (before insert, after insert) {
+    for(Account acc : Trigger.new) {
+        acc.Description = 'Processed';
+    }
+}
+Before vs After
+Type	Use Case
+Before	Modify values before save
+After	Access record Id, related records
+Trigger Context Variables
+Trigger.new
+Trigger.old
+Trigger.isInsert
+Trigger.isUpdate
+Trigger.isDelete
+Trigger.isBefore
+Trigger.isAfter
+Order of Execution (Simplified)
+Validation Rules
+Before Triggers
+After Triggers
+Assignment Rules
+Workflow Rules
+Process Builder / Flows
+Trigger Frameworks
+
+Avoid writing logic directly in triggers.
+
+Best Practice Structure:
+
+One trigger per object
+Delegate logic to handler classes
+trigger AccountTrigger on Account (before insert) {
+    AccountHandler.handleBeforeInsert(Trigger.new);
+}
+3.5 Governor Limits
+
+Salesforce enforces limits to ensure multi-tenant efficiency.
+
+Common Limits
+Limit	Value
+SOQL queries	100
+DML operations	150
+CPU time	~10 sec
+Best Practices to Avoid Limits
+Avoid SOQL inside loops
+Use bulk processing
+Use collections (Map/Set)
+Use @future or Batch for heavy work
+
+❌ Bad:
+
+for(Account acc : accounts) {
+    insert acc;
+}
+
+✅ Good:
+
+insert accounts;
+3.6 Exception Handling
+Try-Catch
+try {
+    insert acc;
+} catch(Exception e) {
+    System.debug(e.getMessage());
+}
+Custom Exceptions
+public class MyException extends Exception {}
+Best Practices
+Catch specific exceptions
+Log errors properly
+Avoid silent failures
+3.7 Asynchronous Apex
+
+Used for long-running operations.
+
+Future Methods
+@future
+public static void processAsync() {
+    // logic
+}
+Runs in background
+No return value
+Queueable Apex
+public class MyQueue implements Queueable {
+    public void execute(QueueableContext context) {
+        // logic
+    }
+}
+System.enqueueJob(new MyQueue());
+Supports chaining
+More flexible than future
+Batch Apex
+
+Used for large datasets.
+
+public class MyBatch implements Database.Batchable<SObject> {
+    public Database.QueryLocator start(Database.BatchableContext bc) {
+        return Database.getQueryLocator('SELECT Id FROM Account');
+    }
+
+    public void execute(Database.BatchableContext bc, List<Account> scope) {
+        // process records
+    }
+
+    public void finish(Database.BatchableContext bc) {
+        // post-processing
+    }
+}
+Scheduled Apex
+public class MyScheduler implements Schedulable {
+    public void execute(SchedulableContext sc) {
+        // logic
+    }
+}
+System.schedule('My Job', '0 0 12 * * ?', new MyScheduler());
+Summary (For Interview + Book)
+Apex is backend logic of Salesforce
+Core = Classes, Data Types, Access Control
+Collections are essential for bulk processing
+SOQL/SOSL = Data access layer
+Triggers = Event-driven automation (use frameworks)
+Governor Limits = Most important concept for interviews
+Exception Handling = Stability + debugging
+Async Apex = Scalability and performance
+
+
+❌ O(n²) problem
+
+4. Use Limits Class
+System.debug(Limits.getQueries());
+System.debug(Limits.getLimitQueries());
+3.12 Advanced SOQL Techniques
+Dynamic SOQL
+String query = 'SELECT Id, Name FROM Account WHERE Name = :name';
+List<Account> accs = Database.query(query);
+For Loop Query (Memory Efficient)
+for(Account acc : [SELECT Id FROM Account]) {
+    // process
+}
+Relationship Depth
+Max 5 levels up
+Max 1 level down
+3.13 Transaction Control
+Savepoints & Rollback
+Savepoint sp = Database.setSavepoint();
+
+try {
+    insert acc;
+} catch(Exception e) {
+    Database.rollback(sp);
+}
+Partial Success (Database Methods)
+Database.SaveResult[] results = Database.insert(accounts, false);
+false → allows partial success
+3.14 Advanced Asynchronous Apex
+Future vs Queueable vs Batch vs Scheduled
+Feature	Future	Queueable	Batch	Scheduled
+Complexity	Low	Medium	High	Medium
+Chaining	No	Yes	Yes	No
+Records	Small	Medium	Large	Depends
+Queueable Chaining
+public class Job1 implements Queueable {
+    public void execute(QueueableContext context) {
+        System.enqueueJob(new Job2());
+    }
+}
+Batch Apex Best Practices
+Batch size: 200 (default)
+Use Database.Stateful to retain state
+public class MyBatch implements Database.Batchable<SObject>, Database.Stateful {
+    Integer count = 0;
+
+    public void execute(Database.BatchableContext bc, List<Account> scope) {
+        count += scope.size();
+    }
+}
+When to Use What (Interview Gold)
+Future → Simple async
+Queueable → Most common modern use
+Batch → Large data (>50k records)
+Scheduled → Time-based jobs
+3.15 Apex Testing (CRITICAL for Interviews)
+Requirements
+Minimum 75% coverage
+Test both positive & negative cases
+Example Test Class
+@isTest
+public class AccountServiceTest {
+
+    @isTest
+    static void testCreateAccount() {
+        Test.startTest();
+        AccountService.createAccount('Test Acc');
+        Test.stopTest();
+
+        List<Account> accs = [SELECT Id FROM Account WHERE Name = 'Test Acc'];
+        System.assert(accs.size() > 0);
+    }
+}
+Key Concepts
+Test.startTest() → resets limits
+Test.stopTest() → executes async code
+Use test data, not org data
+3.16 Security in Apex
+With Sharing vs Without Sharing
+public with sharing class MyClass {}
+Keyword	Behavior
+with sharing	Enforces user permissions
+without sharing	Ignores sharing rules
+Field-Level Security
+if(Schema.sObjectType.Account.fields.Name.isAccessible()) {
+    // safe access
+}
+3.17 Common Interview Scenarios
+Scenario 1
+
+Update child records when parent changes
+
+→ Use Trigger + Map + Bulkification
+
+Scenario 2
+
+Prevent duplicate records
+
+→ Use Set + Trigger validation
+
+Scenario 3
+
+Process 1 million records
+
+→ Use Batch Apex
+
+Scenario 4
+
+Callout to external API
+
+→ Use Future/Queueable with @future(callout=true)
+
+Final Summary (Level 2)
+Bulkification is non-negotiable
+Trigger frameworks = industry standard
+Async Apex = performance backbone
+Governor limits = design constraint, not obstacle
+Testing = mandatory for deployment
+Security = critical in real orgs

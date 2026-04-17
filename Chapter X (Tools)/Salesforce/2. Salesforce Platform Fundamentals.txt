@@ -1,0 +1,194 @@
+1. Salesforce Platform Fundamentals
+
+Chapter 1.1 — Salesforce Architecture (In-Depth)
+
+1. Introduction
+    Salesforce architecture refers to the structural design of the Salesforce platform, which enables organizations to build scalable, secure, and customizable applications in a shared cloud environment. It is fundamentally built on three key principles:
+    Multi-tenant architecture
+    Metadata-driven development
+    Layered and MVC-based design
+    These principles allow Salesforce to deliver high performance, rapid development, and flexibility without requiring developers to manage infrastructure.
+
+
+2. Multi-Tenant Architecture
+
+    2.1 Definition
+        Multi-tenant architecture is a system design in which a single instance of the software serves multiple customers (tenants), while ensuring that each tenant's data remains logically isolated and secure.
+
+    2.2 Key Characteristics
+        Shared Infrastructure:
+        All organizations run on the same application servers and database infrastructure.
+        Resources such as CPU, memory, and storage are shared.
+        Logical Data Isolation:
+        Each organization (org) has a unique identifier.
+        Data is segregated logically rather than physically.
+
+    2.3 Advantages
+        Cost Efficiency: No need for dedicated infrastructure per customer.
+        Automatic Upgrades: Salesforce releases updates centrally without customer intervention.
+        Scalability: The platform can support millions of users simultaneously.
+
+    2.4 Governor Limits
+        Because resources are shared, Salesforce enforces governor limits to ensure fair usage.
+        Examples include:
+        Maximum number of SOQL queries per transaction
+        CPU execution time limits
+        Heap size limits
+        These limits are critical for maintaining system stability and performance in a multi-tenant environment.
+
+    2.5 Interview Insight
+        A strong explanation should include both resource sharing and governor limits:
+        “Salesforce uses a multi-tenant architecture where multiple organizations share the same infrastructure while maintaining strict data isolation. Governor limits ensure fair resource usage across tenants.”
+
+3. Metadata-Driven Architecture
+    3.1 Definition
+        Salesforce is a metadata-driven platform where application structure and behavior are defined using metadata rather than direct code or database configurations.
+
+    3.2 What is Metadata
+        Metadata is “data about data.” It defines the structure and behavior of the application.
+        Examples:
+        Objects and fields
+        Page layouts
+        Validation rules
+        Flows and process automation
+        Apex classes
+
+    3.3 Key Characteristics
+        Declarative Development
+        Administrators can configure applications using the UI without writing code.
+        Abstraction from Database 
+        Developers do not interact directly with database tables.
+        Salesforce manages storage, indexing, and optimization internally.
+
+    3.4 Benefits
+        Faster development cycles
+        Easier customization and maintenance
+        Simplified deployments using metadata APIs or tools'
+
+    3.5 Metadata API
+        The Metadata API enables:
+        Deployment of components between environments
+        Version control integration
+        CI/CD pipelines
+
+    3.6 Interview Insight
+        “Salesforce's metadata-driven architecture allows developers to define application behavior declaratively, enabling faster development and eliminating the need for direct database management.”
+
+4. Layered Architecture
+Salesforce follows a layered architecture that separates concerns into distinct layers. This improves maintainability, scalability, and clarity.
+
+    4.1 Data Layer
+        Responsible for data storage and structure.
+        Components:
+        Standard objects (Account, Contact, Opportunity)
+        Custom objects
+        Fields and relationships
+
+    4.2 Logic Layer
+        Handles business logic and automation.
+        Components:
+        Apex classes and triggers
+        Flows
+        Process Builder (legacy)
+
+    4.3 Presentation Layer
+        Responsible for user interaction and UI rendering.
+        Components:
+        Lightning Web Components (LWC)
+        Aura Components
+        Visualforce pages
+
+    4.4 Integration Layer
+        Enables communication with external systems.
+        Components:
+        REST APIs
+        SOAP APIs
+        Platform events
+        External services
+
+    4.5 Benefits of Layered Architecture
+        Separation of concerns
+        Easier debugging and maintenance
+        Improved scalability
+        Reusability of components
+
+    4.6 Interview Insight
+        “Salesforce uses a layered architecture that separates data, business logic, presentation, and integration layers, which improves scalability and maintainability.”
+
+5. MVC Pattern in Salesforce
+Salesforce loosely follows the Model-View-Controller (MVC) design pattern.
+
+    5.1 Mapping MVC to Salesforce
+        Model: Objects and database records
+        View: Lightning Web Components, Aura, Visualforce
+        Controller: Apex classes and JavaScript controllers
+
+    5.2 Example
+        Model: Opportunity object
+        View: LWC displaying opportunity details
+        Controller: Apex class retrieving and processing data
+
+    5.3 Characteristics
+        Not a strict MVC implementation
+        Controller logic can exist both server-side (Apex) and client-side (JavaScript)
+        Tight integration between layers compared to traditional MVC frameworks
+
+    5.4 Interview Insight
+        “Salesforce loosely implements MVC where objects represent the model, UI frameworks like LWC represent the view, and Apex acts as the controller.”
+
+6. Organizational Complexity
+As Salesforce implementations grow, architectural complexity increases significantly.
+
+    6.1 Causes of Complexity
+        Large number of custom objects and fields
+        Multiple automation tools (Flows, Triggers, Workflows)
+        Poor naming conventions
+        Lack of documentation
+
+    6.2 Common Problems
+        Automation conflicts (e.g., Flow and Trigger updating the same record)
+        Performance degradation
+        Difficult debugging and maintenance
+        Increased technical debt
+
+    6.3 Best Practices to Manage Complexity
+        Use consistent naming conventions
+        Avoid overlapping automation (choose either Flow or Apex when possible)
+        Modularize logic into reusable components
+        Maintain proper documentation
+        Use tools for architecture visualization and dependency tracking
+
+    6.4 Interview Insight
+        “As Salesforce orgs scale, managing complexity becomes critical. Proper design patterns, governance, and avoiding automation conflicts are essential for long-term maintainability.”
+
+7. Summary
+Salesforce architecture is built on a combination of multi-tenant infrastructure, metadata-driven development, and layered design principles. These enable rapid application development, scalability, and efficient resource utilization. However, as systems grow, managing complexity through structured architecture and best practices becomes essential.
+
+
+8 Environment Types------  Sandbox Comparison Table
+Sandbox Type  ----- DataIncluded -----   Storage -----   RefreshTime ----- UseCase
+Developer	         Metadata only	     ~200 MB	       1 day	     Development
+Developer Pro	     Metadata only	      ~1 GB	           1 day	     Advanced dev/testing
+Partial Copy	Metadata + partial data	  ~5 GB	           5 days	     UAT, integration
+Full	         Full data + metadata	Production size	   29 days	     Staging, performance
+
+Deployment Flow (Real-World)
+Typical workflow:
+Development in Developer Sandbox
+Testing in Partial Copy
+Final validation in Full Sandbox
+Deployment to Production
+
+Key Interview Summary
+“Salesforce provides different sandbox environments like Developer, Developer Pro, Partial Copy, and Full. These environments support development, testing, and staging workflows, ensuring that changes are validated before being deployed to production.”
+
+
+9 Salesforce Editions
+Developer, Enterprise, Unlimited
+
+Feature   	    Developer	Enterprise	Unlimited
+Cost	         Free	    Paid	    Paid (higher)
+Customization	 Yes	    Yes	        Yes
+Storage      	Limited	    Moderate	High
+Sandboxes        No	        Limited	    More
+Support	         Basic	    Standard	24/7 Premium

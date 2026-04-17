@@ -1,0 +1,119 @@
+Aura Components (Legacy but still asked)
+
+Even though Aura Components are largely replaced by LWC, they are still important for:
+
+Interviews (very commonly asked)
+Maintaining legacy Salesforce applications
+Understanding evolution of UI frameworks in Salesforce
+5.1 Basics
+Component Structure
+
+An Aura component is made up of multiple files bundled together.
+
+7
+
+Each component bundle typically contains:
+
+File	Purpose
+.cmp	Main component markup
+.js	Client-side controller
+Helper.js	Reusable JS logic
+Renderer.js	Custom rendering (rarely used)
+Design	For Lightning App Builder
+Documentation	Description for developers
+SVG	Icon
+Example Component
+<aura:component>
+    <aura:attribute name="message" type="String" default="Hello Aura"/>
+
+    <lightning:button label="Click Me" onclick="{!c.handleClick}"/>
+
+    <p>{!v.message}</p>
+</aura:component>
+Attributes
+
+Attributes are like state variables in Aura.
+
+<aura:attribute name="count" type="Integer" default="0"/>
+Key Points:
+Defined using <aura:attribute>
+Accessed using {!v.attributeName}
+Can store:
+Primitive types (String, Integer, Boolean)
+Objects
+Lists
+5.2 Client-Side Controller
+
+Aura uses JavaScript on the client side with Controller + Helper pattern.
+
+JS Controller
+
+Handles UI events.
+
+({
+    handleClick : function(component, event, helper) {
+        component.set("v.message", "Button Clicked");
+    }
+})
+Responsibilities:
+Handle user interactions
+Call helper functions
+Trigger server-side calls
+Helper
+
+Contains reusable logic.
+
+({
+    updateMessage : function(component) {
+        component.set("v.message", "Updated via Helper");
+    }
+})
+Why Helper?
+Avoid duplicate code
+Keep controller clean
+Share logic across functions
+Flow
+User Action → Controller → Helper → Update Component
+5.3 Server-Side Calls (Apex Controller)
+
+Aura interacts with Apex using actions.
+
+Apex Controller
+public with sharing class MyController {
+    @AuraEnabled
+    public static String getMessage() {
+        return 'Hello from Apex';
+    }
+}
+Calling Apex from Aura
+({
+    callApex : function(component) {
+        var action = component.get("c.getMessage");
+
+        action.setCallback(this, function(response) {
+            var state = response.getState();
+            if(state === "SUCCESS") {
+                component.set("v.message", response.getReturnValue());
+            }
+        });
+
+        $A.enqueueAction(action);
+         }
+})
+Key Concepts
+1. Action
+Represents Apex method call
+2. Callback
+Handles async response
+3. States
+SUCCESS
+ERROR
+INCOMPLETE
+Flow
+Aura JS → Action → Apex → Response → Callback → UI Update
+Important Interview Points
+Aura is event-driven framework
+Uses two-way data binding
+Requires Controller + Helper pattern
+Server calls are asynchronous
+Replaced by LWC (better performance + standard JS)

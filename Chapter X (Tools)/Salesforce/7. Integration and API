@@ -1,0 +1,313 @@
+Integration & APIs (Salesforce)
+
+This section covers how Salesforce communicates with external systems and handles large-scale data exchange.
+
+6.1 APIs
+
+Salesforce exposes multiple APIs depending on the use case.
+
+REST API
+Uses standard HTTP methods: GET, POST, PATCH, DELETE
+Lightweight and widely used
+Data format: JSON
+Key Features
+Easy integration with web/mobile apps
+Supports CRUD operations
+Stateless communication
+Example
+GET /services/data/v60.0/sobjects/Account/
+Use Cases
+Web applications
+Mobile apps
+Real-time integrations
+SOAP API
+Uses XML-based messaging protocol
+Requires WSDL (Web Service Definition Language)
+Key Features
+Strong typing (strict schema)
+Built-in error handling
+Enterprise-grade integrations
+Use Cases
+Legacy systems
+Enterprise middleware (like SAP, Oracle)
+Bulk API
+Designed for large data volumes (millions of records)
+Types
+Bulk API 1.0
+Bulk API 2.0 (recommended)
+Key Features
+Asynchronous processing
+Handles batch uploads/downloads
+Optimized for performance
+Use Cases
+Data migration
+Nightly batch jobs
+ETL tools
+6.2 Callouts
+
+Salesforce can call external systems via Apex.
+
+HTTP Callouts in Apex
+Used to send HTTP requests to external services
+Example
+Http http = new Http();
+HttpRequest req = new HttpRequest();
+
+req.setEndpoint('https://api.example.com/data');
+req.setMethod('GET');
+
+HttpResponse res = http.send(req);
+
+System.debug(res.getBody());
+Important Points
+Must be asynchronous in triggers (Future, Queueable)
+Requires Remote Site Settings or Named Credentials
+JSON Parsing
+Deserialize JSON → Apex Object
+String jsonString = '{"name":"Raj","age":25}';
+Map<String, Object> result = (Map<String, Object>) JSON.deserializeUntyped(jsonString);
+
+System.debug(result.get('name'));
+Serialize Apex → JSON
+Map<String, Object> data = new Map<String, Object>();
+data.put('name', 'Raj');
+
+String jsonOutput = JSON.serialize(data);
+Use Cases
+REST API communication
+External system data handling
+6.3 Authentication
+OAuth 2.0
+
+Standard protocol for secure authorization.
+
+Flow Types
+Authorization Code Flow
+Username-Password Flow
+JWT Bearer Token Flow
+Key Concepts
+Access Token
+Refresh Token
+Client ID & Secret
+Use Case
+Secure third-party integrations
+Named Credentials
+Simplifies authentication setup
+Features
+Stores endpoint + authentication
+Supports OAuth automatically
+Eliminates manual token handling
+Example
+req.setEndpoint('callout:My_Named_Credential/api/data');
+Benefits
+Secure
+Easy maintenance
+No hardcoding credentials
+6.4 Integration Patterns
+Request-Reply (Synchronous)
+Salesforce sends request and waits for response
+Flow
+Request sent
+External system processes
+Immediate response returned
+Use Case
+Real-time validation (e.g., payment check)
+Fire-and-Forget (Asynchronous)
+Salesforce sends request and does not wait
+Flow
+Request sent
+No response expected
+Use Case
+Logging systems
+Notifications
+Batch Integration
+Processes large datasets periodically
+Flow
+Data collected
+Sent in batches
+Processed asynchronously
+Use Case
+Nightly data sync
+Data warehousing
+Summary Table
+Feature	Best For	Nature
+REST API	Real-time apps	Synchronous
+SOAP API	Enterprise systems	Synchronous
+Bulk API	Large data operations	Asynchronous
+Callouts	External communication	Both
+OAuth 2.0	Secure access	Auth Layer
+Named Credentials	Simplified auth	Config Layer
+Integration Patterns	Architecture design	Strategy
+
+Integration Limits (Very Important for Interviews)
+
+Salesforce enforces strict governor limits to maintain multi-tenant stability.
+
+Key Callout Limits
+Max callouts per transaction: 100
+Timeout limit: 120 seconds (default shorter if not set)
+Heap size:
+Sync: ~6 MB
+Async: ~12 MB
+Critical Constraints
+Callouts not allowed after DML (unless async)
+Triggers cannot directly make callouts → use:
+@future(callout=true)
+Queueable Apex
+Example (Async Callout)
+@future(callout=true)
+public static void sendData() {
+    Http http = new Http();
+    HttpRequest req = new HttpRequest();
+    req.setEndpoint('https://api.example.com');
+    req.setMethod('POST');
+    http.send(req);
+}
+2. Middleware (Enterprise Integration Layer)
+
+Instead of directly connecting Salesforce to every system, companies use middleware.
+
+Popular Tools
+MuleSoft (Salesforce-owned)
+Dell Boomi
+Informatica
+Why Middleware?
+Without Middleware
+
+Salesforce ↔ System A
+Salesforce ↔ System B
+Salesforce ↔ System C
+
+→ Tightly coupled, hard to maintain
+
+With Middleware
+
+Salesforce → Middleware → Multiple Systems
+
+→ Loose coupling + scalability
+
+Responsibilities of Middleware
+Data transformation (JSON ↔ XML)
+Authentication handling
+Retry mechanisms
+Error logging
+Rate limiting
+3. Platform Events & Streaming APIs
+
+Used for event-driven architecture (EDA)
+
+Platform Events
+Asynchronous messaging inside Salesforce
+Publisher → Event → Subscriber
+Use Case
+Order created → Notify external system
+Streaming API
+Real-time data push using CometD protocol
+Types
+PushTopic
+Change Data Capture (CDC)
+Generic Events
+Example Flow
+Record updated in Salesforce
+Event published
+External system subscribes and reacts
+4. Integration Architecture Patterns (Deep Dive)
+1. Request-Reply (Synchronous)
+Flow
+User action → Salesforce → External API → Response → UI
+Problem
+Slow external systems = bad UX
+2. Fire-and-Forget (Async)
+Flow
+Salesforce sends request → continues execution
+Implementation
+Future / Queueable / Platform Events
+3. Batch Data Sync
+Tools
+Batch Apex
+Bulk API
+Example
+Nightly sync of 1M records
+4. Event-Driven Architecture (Modern)
+Flow
+Event triggers → multiple systems react independently
+Benefits
+Highly scalable
+Decoupled systems
+5. Real-World Architecture Example
+Scenario: E-commerce System
+Salesforce → CRM
+External → Payment Gateway, Inventory, ERP
+Architecture
+User → Salesforce
+        ↓
+   Platform Event
+        ↓
+   Middleware (MuleSoft)
+        ↓
+  -------------------------
+  | Payment | ERP | Inventory |
+  -------------------------
+Flow Explanation
+User places order in Salesforce
+Platform Event is fired
+Middleware listens
+Middleware:
+Calls Payment API
+Updates ERP
+Updates Inventory
+Sends response back (if needed)
+6. Error Handling & Retry Strategy
+Problems in Real Systems
+API downtime
+Timeout failures
+Partial data failures
+Solutions
+Retry Mechanism
+Middleware retries failed requests
+Exponential backoff
+Dead Letter Queue
+Failed messages stored for reprocessing
+Logging
+Store logs in:
+Custom objects
+External logging tools
+7. Security in Integration
+Best Practices
+Use Named Credentials (never hardcode)
+Use OAuth instead of username/password
+Encrypt sensitive data
+Use IP whitelisting
+8. Performance Optimization
+Techniques
+Use Bulk API for large data
+Avoid synchronous calls in UI flows
+Cache responses when possible
+Use selective queries (SOQL optimization)
+9. Interview-Level Insights (What Most People Miss)
+1. “Why not always use REST?”
+REST = real-time but not scalable for bulk
+Bulk API is better for large datasets
+2. “When to use Platform Events vs Callouts?”
+Platform Events → async, scalable, decoupled
+Callouts → immediate response needed
+3. “How do you handle failures?”
+Retry + logging + DLQ + monitoring
+4. “How to avoid hitting limits?”
+Async processing
+Batch processing
+Middleware buffering
+10. Ultimate Architecture Thinking (Senior Level)
+
+You should think in layers:
+
+Layer	Responsibility
+UI Layer	LWC / UI
+Logic Layer	Apex
+Integration Layer	APIs / Events
+Middleware Layer	MuleSoft
+External Systems	ERP, DB
+Key Mindset Shift
+
+Beginner: “How do I call an API?”
+Advanced: “How do I design a scalable, fault-tolerant integration system?”

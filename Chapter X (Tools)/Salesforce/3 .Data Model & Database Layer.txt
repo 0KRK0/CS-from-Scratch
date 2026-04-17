@@ -1,0 +1,172 @@
+[ 2. Data Model & Database Layer
+2.1 Objects
+Standard Objects
+Custom Objects
+External Objects
+Big Objects
+2.2 Fields & Data Types
+Text, Number, Date, Formula
+Picklists (dependent picklists)
+Auto Number
+2.3 Relationships
+Lookup
+Master-Detail
+Many-to-Many (Junction Object)
+Self Relationship
+2.4 Schema Design
+Normalization vs Denormalization
+Data integrity
+Roll-up summary fields ]
+
+2. Data Model & Database Layer
+
+2.1 Objects
+Standard Objects
+Predefined objects provided by Salesforce.
+Represent common business entities.
+Examples:
+Account (company/customer)
+Contact (person)
+Opportunity (sales deal)
+Lead (prospect)
+Fully customizable (fields, relationships, validation rules, etc.), but core structure is fixed.
+
+Custom Objects
+User-defined objects created to store specific business data.
+Example:
+Invoice__c
+Project__c
+Key features:
+Custom fields
+Custom relationships
+Page layouts
+Record types
+Suffix: __c (indicates custom)
+
+External Objects
+Represent data stored outside Salesforce.
+Accessed via Salesforce Connect.
+Data is not stored in Salesforce DB.
+Real-time access using external systems (OData, REST APIs).
+Suffix: __x
+
+Big Objects
+Designed for massive data storage (billions of records).
+Used for:
+Historical data
+Audit logs
+Event tracking
+Key characteristics:
+Limited querying (Async SOQL)
+No standard UI support
+Indexed fields required
+Suffix: __b
+
+2.2 Fields & Data Types
+Basic Data Types
+Type	Description
+Text	Stores strings
+Number	Integer or decimal values
+Date	Date only
+DateTime	Date + Time
+Boolean	True/False
+Email	Validated email format
+Phone	Phone number
+Formula Fields
+Read-only fields.
+Value is calculated dynamically using formulas.
+Example:
+Amount * 0.18 (GST calculation)
+Supports:
+Arithmetic operations
+Logical conditions
+Cross-object references
+Picklists
+Standard Picklist
+Predefined list of values.
+User selects one value.
+Dependent Picklist
+Value depends on another field (controlling field).
+Example:
+Country → State
+Auto Number
+Automatically generated unique value.
+Format example:
+INV-0001, INV-0002
+Used for:
+Record identification
+Sequential tracking
+
+2.3 Relationships
+
+Lookup Relationship
+Loose coupling between objects.
+Child can exist without parent.
+Example:
+Contact → Account
+Features:
+Optional relationship
+No automatic delete
+Limited roll-up capability
+
+Master-Detail Relationship
+Strong coupling.
+Child depends on parent.
+Key behaviors:
+Cascade delete
+Inherits parent sharing/security
+Supports roll-up summary fields
+
+Many-to-Many (Junction Object)
+Achieved using a junction object.
+Junction object has:
+Two Master-Detail relationships
+Example:
+Students ↔ Courses → Enrollment (junction)
+
+Self Relationship
+Object relates to itself.
+Example:
+Employee → Manager (both in same object)
+Implemented using Lookup.
+
+2.4 Schema Design
+Normalization vs Denormalization
+
+Normalization
+Data is split into multiple related objects.
+Reduces redundancy.
+Improves data consistency.
+Example:
+Separate Account and Contact
+
+Denormalization
+Data stored in fewer objects.
+Improves performance (fewer joins).
+May introduce redundancy.
+
+Trade-off
+
+Normalize → Data integrity
+Denormalize → Performance
+Data Integrity
+Ensures accuracy and consistency of data.
+
+Techniques:
+Validation Rules
+Required Fields
+Unique Fields
+Relationships (Master-Detail)
+Triggers / Apex logic
+Roll-Up Summary Fields
+Available only in Master-Detail relationships.
+Perform aggregate calculations on child records.
+
+Functions:
+COUNT
+SUM
+MIN
+MAX
+
+Example:
+Total Invoice Amount on Account = SUM of all related Invoices

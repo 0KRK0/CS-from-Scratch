@@ -1,0 +1,166 @@
+Automation Tools (Salesforce)
+
+Automation in Salesforce allows you to implement business logic with minimal or no code (declarative) or custom code (Apex). This section is critical for both interviews and real-world architecture decisions.
+
+8.1 Declarative Automation
+Workflow Rules (Legacy)
+
+Definition:
+Oldest automation tool in Salesforce used for simple “if this, then that” logic.
+
+Capabilities:
+
+Field Updates
+Email Alerts
+Task Creation
+Outbound Messages
+
+Limitations:
+
+No complex logic (no loops, no branching)
+Cannot create records (except tasks)
+Being phased out in favor of Flow
+
+Example:
+
+If Opportunity Stage = Closed Won → Send email
+Process Builder (Deprecated)
+
+Definition:
+A more powerful successor to Workflow Rules, but now deprecated and replaced by Flow.
+
+Capabilities:
+
+Create/update records
+Invoke Apex
+Post to Chatter
+Call Flows
+
+Limitations:
+
+Performance issues (runs slower)
+Hard to debug
+Salesforce officially recommends migrating to Flow
+
+Example:
+
+When Account Type = Customer → Create related Contact automatically
+Flow (MOST IMPORTANT)
+
+Definition:
+Flow is the primary automation tool in modern Salesforce. It replaces both Workflow Rules and Process Builder.
+
+Key Features:
+
+Visual drag-and-drop builder
+Supports complex logic (loops, decisions)
+Can interact with multiple objects
+Can call Apex
+Can run before/after database operations
+
+Core Components:
+
+Elements: Assignment, Decision, Loop, Get Records, Create Records
+Connectors: Define execution path
+Variables: Store data
+
+Why Flow is Important:
+
+High performance (especially record-triggered flows)
+Full control over logic
+Future-proof (Salesforce roadmap focused here)
+8.2 Flow Types
+1. Record-Triggered Flow
+
+Triggered automatically when a record is created/updated/deleted
+
+Types:
+
+Before Save Flow
+Fastest (no DML required)
+Used for field updates
+After Save Flow
+Used for complex logic (create related records, call Apex)
+
+Example:
+
+When Opportunity is created → Auto-create Task
+2. Screen Flow
+
+User-interactive flow with UI screens
+
+Used for:
+
+Wizards
+Guided data entry
+Custom UI processes
+
+Example:
+
+Loan application form with multiple steps
+3. Scheduled Flow
+
+Runs at a specific time or frequency
+
+Used for:
+
+Batch-like operations
+Data cleanup
+Scheduled updates
+
+Example:
+
+Every night → Update inactive customers
+8.3 When to Use Flow vs Apex
+
+This is one of the most important interview questions.
+
+Use Flow When:
+Logic is simple to moderately complex
+No heavy computations required
+You want low-code / admin-friendly solution
+Standard CRUD operations
+Maintainability is important
+
+Examples:
+
+Field updates
+Record creation
+Approval-like logic
+Notifications
+Use Apex When:
+Logic is very complex
+Requires loops over large datasets
+Needs advanced error handling
+Requires integration (API callouts)
+Needs transaction control
+
+Examples:
+
+Complex validation across multiple objects
+Bulk processing with optimization
+External system integrations
+Custom algorithms
+Flow vs Apex (Comparison Table)
+Feature	Flow	Apex
+Type	Declarative (No Code)	Programmatic (Code)
+Complexity	Medium	High
+Performance	Good	Best (if optimized)
+Maintainability	Easy	Requires developers
+Debugging	Moderate	Advanced
+Bulk Handling	Limited	Strong
+UI Support	Yes (Screen Flow)	No
+Decision Strategy (Golden Rule)
+Start with Flow
+Move to Apex only if Flow cannot handle the requirement
+Real-World Architecture Insight
+
+In enterprise projects:
+
+80% automation → Flow
+20% → Apex (for edge cases)
+
+A common pattern:
+
+Flow handles orchestration
+Apex handles complex logic

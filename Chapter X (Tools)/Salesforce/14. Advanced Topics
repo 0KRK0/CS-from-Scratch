@@ -1,0 +1,232 @@
+13. Advanced Topics (Big Differentiator)
+
+These topics separate mid-level developers from senior/architect-level engineers. Most real-world Salesforce scaling problems live here.
+
+13.1 Performance Optimization
+
+Performance issues in Salesforce are almost always due to:
+
+Poor SOQL design
+Inefficient Apex
+Large data volumes
+Bad UI rendering (LWC/Aura)
+Query Optimization (SOQL)
+Core Rule:
+
+“Your query should return only what you need, as fast as possible.”
+
+Key Techniques
+1. Avoid SELECT *
+
+Bad:
+
+SELECT Id, Name, Description__c FROM Account
+
+Good:
+
+SELECT Id, Name FROM Account
+2. Use WHERE Clauses Effectively
+
+Bad:
+
+SELECT Id FROM Account
+
+Good:
+
+SELECT Id FROM Account WHERE CreatedDate = LAST_N_DAYS:30
+3. Avoid Non-Selective Queries (Critical in LDV)
+
+Bad:
+
+WHERE Status__c != 'Closed'
+
+Good:
+
+WHERE Status__c = 'Open'
+4. Use Indexed Fields
+
+Indexed fields:
+
+Primary Keys (Id)
+Foreign Keys
+External IDs
+Custom indexed fields
+5. Use Query Plan Tool
+
+Salesforce provides Query Plan Tool:
+
+Shows cost
+Shows selectivity
+Helps optimize queries
+Apex Optimization
+Anti-pattern (Common mistake)
+for(Account acc : accounts){
+    List<Contact> cons = [SELECT Id FROM Contact WHERE AccountId = :acc.Id];
+}
+Optimized (Bulkified)
+List<Contact> cons = [SELECT Id, AccountId FROM Contact WHERE AccountId IN :accountIds];
+Key Principles
+Bulkify everything
+Avoid SOQL inside loops
+Avoid DML inside loops
+Use collections (Map, Set)
+Caching
+
+Caching reduces repeated computation and DB calls.
+
+Types of Caching
+1. Platform Cache
+Org Cache
+Session Cache
+
+Use case:
+
+Frequently accessed config
+API responses
+2. Custom Caching (Apex)
+static Map<Id, Account> cacheMap;
+3. Client-Side Cache (LWC)
+@wire caching
+Lightning Data Service
+When to Use Caching
+Expensive queries
+Static data
+Repeated API calls
+13.2 Large Data Volume (LDV)
+
+LDV = Millions of records
+
+This is where most systems break if not designed properly.
+
+Indexing
+Types of Indexes
+Type	Description
+Standard Index	Default (Id, Name, Lookup)
+Custom Index	Requested via Salesforce
+External ID	Automatically indexed
+When to Request Custom Index
+Field used in WHERE clause frequently
+High data volume object
+Poor query performance
+Selectivity (VERY IMPORTANT)
+
+A query is selective if it filters enough data.
+
+Salesforce Rule:
+Standard Index → must return < 30% of records
+Custom Index → must return < 10% of records
+Example
+
+Bad (Non-selective):
+
+WHERE Status__c = 'Active'   // 80% records
+
+Good (Selective):
+
+WHERE Status__c = 'Active' AND Region__c = 'India'
+LDV Best Practices
+Use skinny tables (via Salesforce support)
+Archive old data
+Use async processing (Batch Apex)
+Avoid full table scans
+Partition data logically
+13.3 Platform Events
+
+This is Salesforce’s event-driven architecture backbone.
+
+What are Platform Events?
+Asynchronous message bus
+Decouples systems
+Works like Kafka-lite inside Salesforce
+Architecture
+Publisher → Event Bus → Subscriber
+Use Cases
+Microservices communication
+Integration with external systems
+Real-time updates
+Order processing systems
+Example
+Event Definition
+Order_Event__e event = new Order_Event__e(
+    Order_Id__c = '123',
+    Status__c = 'Created'
+);
+EventBus.publish(event);
+Subscriber (Trigger)
+trigger OrderEventTrigger on Order_Event__e (after insert) {
+    for(Order_Event__e e : Trigger.New){
+        System.debug(e.Status__c);
+    }
+}
+Key Characteristics
+Feature	Behavior
+Async	Yes
+Replay	Supported
+Transaction	Separate
+Scalability	High
+When to Use Platform Events
+
+Use when:
+
+Loose coupling required
+Async processing
+Multiple consumers
+
+Avoid when:
+
+You need immediate response
+Strict transaction control
+13.4 Custom Metadata & Custom Settings
+
+This is config-driven development — critical for scalable systems.
+
+Why This Matters
+
+Hardcoding = junior
+Config-driven = architect
+
+Custom Settings
+Types
+List Custom Settings
+Hierarchy Custom Settings
+Use Case
+MySetting__c setting = MySetting__c.getInstance();
+Limitations
+Not deployable easily
+Less flexible
+Custom Metadata (IMPORTANT)
+
+Modern replacement for Custom Settings.
+
+Advantages
+Deployable via packages
+Version controlled
+Queryable like objects
+Example
+SELECT MasterLabel, Value__c FROM Config__mdt
+Real Use Cases
+Use Case	Example
+Feature Flags	Enable/disable logic
+API Endpoints	Store URLs
+Business Rules	Threshold values
+Country Config	Tax rules
+Pattern: Config-Driven Logic
+
+Instead of:
+
+if(country == 'India'){
+    tax = 18;
+}
+
+Use:
+
+SELECT Tax__c FROM Country_Config__mdt WHERE Country__c = 'India'
+Final Architecture Insight
+
+At scale, your system evolves like this:
+
+Level	Approach
+Beginner	Hardcoded logic
+Intermediate	Some optimization
+Advanced	Indexed + selective queries
+Architect	Event-driven + config-driven + cached
