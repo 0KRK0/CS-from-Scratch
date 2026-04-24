@@ -38,8 +38,206 @@ protected	    Within class & subclasses
 global	        Across namespaces (used in managed packages)
 public class Demo {
     private Integer x;
+    protected String protectedVar = 'Accessible in subclasses';
     public void show() {}
 }
+
+public class SubDemo extends Demo {
+    public void accessProtected() {
+        // Can access protectedVar from parent class
+        System.debug(protectedVar);
+    }
+}
+
+Inheritance
+Apex supports single inheritance, allowing a class to inherit properties and methods from a parent class using the 'extends' keyword.
+
+Key Concepts:
+- Subclass (child) inherits all public and protected members from the parent class
+- Subclass can override parent methods (if they are virtual or abstract)
+- Use 'super' keyword to call parent class constructors or methods
+- Abstract classes cannot be instantiated directly and may contain abstract methods
+- Virtual methods can be overridden in subclasses
+
+Example:
+public virtual class Animal {
+    protected String name;
+    
+    public Animal(String name) {
+        this.name = name;
+    }
+    
+    public virtual void makeSound() {
+        System.debug('Animal sound');
+    }
+}
+
+public class Dog extends Animal {
+    public Dog(String name) {
+        super(name); // Call parent constructor
+    }
+    
+    public override void makeSound() {
+        System.debug(name + ' says Woof!');
+    }
+}
+
+// Usage
+Dog myDog = new Dog('Buddy');
+myDog.makeSound(); // Outputs: Buddy says Woof!
+
+Abstract Classes:
+public abstract class Shape {
+    public abstract Double calculateArea();
+    
+    public void display() {
+        System.debug('This is a shape');
+    }
+}
+
+public class Circle extends Shape {
+    private Double radius;
+    
+    public Circle(Double radius) {
+        this.radius = radius;
+    }
+    
+    public override Double calculateArea() {
+        return Math.PI * radius * radius;
+    }
+}
+
+Interfaces
+Interfaces in Apex define a contract that classes must follow. They contain method signatures without implementations. Classes use the 'implements' keyword to adopt one or more interfaces.
+
+Key Concepts:
+- Interfaces cannot be instantiated directly
+- All methods in an interface are implicitly public and abstract
+- A class can implement multiple interfaces (multiple inheritance of behavior)
+- Implementing classes must provide concrete implementations for all interface methods
+- Useful for polymorphism and dependency injection
+
+Example:
+public interface Drawable {
+    void draw();
+    Double getArea();
+}
+
+public interface Resizable {
+    void resize(Double factor);
+}
+
+public class Rectangle implements Drawable, Resizable {
+    private Double width;
+    private Double height;
+    
+    public Rectangle(Double w, Double h) {
+        width = w;
+        height = h;
+    }
+    
+    public void draw() {
+        System.debug('Drawing rectangle');
+    }
+    
+    public Double getArea() {
+        return width * height;
+    }
+    
+    public void resize(Double factor) {
+        width *= factor;
+        height *= factor;
+    }
+}
+
+// Usage
+Rectangle rect = new Rectangle(10, 5);
+rect.draw(); // Drawing rectangle
+System.debug(rect.getArea()); // 50.0
+rect.resize(2);
+System.debug(rect.getArea()); // 200.0
+
+Object-Oriented Programming (OOP) Principles in Apex
+Apex is an object-oriented programming language that supports four main OOP principles:
+
+1. Encapsulation
+   - Bundling data and methods that operate on that data within a class
+   - Using access modifiers (private, protected, public) to control access
+   - Example: Private variables with public getter/setter methods
+
+2. Inheritance
+   - Classes can inherit properties and methods from parent classes using 'extends'
+   - Supports single inheritance only
+   - Enables code reuse and hierarchical relationships
+
+3. Polymorphism
+   - Ability of objects to take on many forms
+   - Method overriding: Subclasses can provide specific implementations of parent methods
+   - Method overloading: Multiple methods with same name but different parameters
+   - Interface implementation: Classes can be treated as different types through interfaces
+
+4. Abstraction
+   - Hiding complex implementation details and showing only essential features
+   - Achieved through abstract classes and interfaces
+   - Abstract classes can have both abstract and concrete methods
+   - Interfaces define contracts without implementations
+
+Example demonstrating all principles:
+public abstract class Vehicle {
+    protected String brand;
+    
+    public Vehicle(String brand) {
+        this.brand = brand;
+    }
+    
+    public abstract void start();
+    public abstract void stop();
+    
+    public void honk() {
+        System.debug('Honk! Honk!');
+    }
+}
+
+public interface Drivable {
+    void accelerate();
+    void brake();
+}
+
+public class Car extends Vehicle implements Drivable {
+    private Integer speed;
+    
+    public Car(String brand) {
+        super(brand);
+        speed = 0;
+    }
+    
+    public override void start() {
+        System.debug(brand + ' car started');
+    }
+    
+    public override void stop() {
+        System.debug(brand + ' car stopped');
+        speed = 0;
+    }
+    
+    public void accelerate() {
+        speed += 10;
+        System.debug('Speed: ' + speed);
+    }
+    
+    public void brake() {
+        if(speed > 0) speed -= 5;
+        System.debug('Speed: ' + speed);
+    }
+}
+
+// Usage
+Car myCar = new Car('Toyota');
+myCar.start();     // Toyota car started
+myCar.accelerate(); // Speed: 10
+myCar.honk();      // Honk! Honk!
+myCar.brake();     // Speed: 5
+myCar.stop();      // Toyota car stopped
 
 3.2 Collections
 
@@ -74,6 +272,39 @@ AggregateResult[] results = [
     FROM Account 
     GROUP BY Industry
 ];
+
+AggregateResult is a special object type returned by SOQL aggregate queries. It represents grouped data with aggregate functions like COUNT(), SUM(), AVG(), MIN(), MAX().
+
+Key Points:
+- AggregateResult is not a standard sObject; it's a read-only object
+- Use aggregate functions: COUNT(), SUM(), AVG(), MIN(), MAX()
+- Always use GROUP BY with aggregate functions (except COUNT() on entire table)
+- Access results using get() method with field names or aliases
+
+Example:
+AggregateResult[] results = [
+    SELECT Industry, COUNT(Id) totalAccounts, SUM(AnnualRevenue) totalRevenue
+    FROM Account 
+    WHERE Industry != null
+    GROUP BY Industry
+    HAVING COUNT(Id) > 5
+];
+
+for(AggregateResult ar : results) {
+    String industry = (String) ar.get('Industry');
+    Integer count = (Integer) ar.get('totalAccounts');
+    Decimal revenue = (Decimal) ar.get('totalRevenue');
+    System.debug(industry + ': ' + count + ' accounts, $' + revenue);
+}
+
+Common Aggregate Functions:
+- COUNT(field) - Count non-null values
+- COUNT() - Count all records
+- SUM(field) - Sum numeric values
+- AVG(field) - Average of numeric values
+- MIN(field) - Minimum value
+- MAX(field) - Maximum value
+
 Relationship Queries
 Parent → Child
 SELECT Name, (SELECT LastName FROM Contacts) FROM Account
@@ -97,6 +328,11 @@ trigger AccountTrigger on Account (before insert, after insert) {
         acc.Description = 'Processed';
     }
 }
+trigger Contaccttrigger on Contact(before insert){
+    for (Contacct con: Trigger.new){
+        con.Description = 'Processed';
+    }
+}
 Before vs After
 Type	Use Case
 Before	Modify values before save
@@ -116,6 +352,99 @@ After Triggers
 Assignment Rules
 Workflow Rules
 Process Builder / Flows
+
+Validation Rules
+Validation rules in Salesforce enforce data quality by preventing records from being saved if they don't meet specified criteria. They are written using formula syntax and can reference fields, functions, and operators.
+
+How to Create a Validation Rule:
+1. Go to Setup → Object Manager → [Object] → Validation Rules
+2. Click "New Validation Rule"
+3. Enter Rule Name and Error Message
+4. Define the Error Condition Formula
+5. Specify where to display the error
+
+Formula Syntax:
+- Use field names with __c for custom fields
+- Logical operators: AND(), OR(), NOT()
+- Comparison operators: ==, !=, <, >, <=, >=
+- Functions: ISBLANK(), ISNULL(), CONTAINS(), etc.
+
+Examples:
+
+1. Required Field Validation:
+   Error Condition: ISBLANK(Name)
+   Error Message: "Account Name is required"
+
+2. Conditional Validation:
+   Error Condition: AND(Industry == "Technology", ISBLANK(Website))
+   Error Message: "Technology accounts must have a website"
+
+3. Cross-Object Validation (using formula fields or triggers):
+   For more complex validations spanning multiple objects, use Apex triggers
+
+4. Date Validation:
+   Error Condition: CloseDate < TODAY()
+   Error Message: "Close Date cannot be in the past"
+
+5. Numeric Validation:
+   Error Condition: AnnualRevenue < 0
+   Error Message: "Annual Revenue cannot be negative"
+
+Example Validation Rule Logic: Account Rating Based on Revenue
+
+Scenario: Ensure that high-revenue accounts have a rating of 'Hot', and prevent saving if criteria aren't met.
+
+Rule Name: Account_Rating_Validation
+
+Error Condition Formula:
+```
+AND(
+    AnnualRevenue > 1000000,
+    Rating__c != 'Hot'
+)
+```
+
+Error Message: "Accounts with revenue over $1M must be rated as 'Hot'"
+
+Logic Breakdown:
+- AND() combines two conditions that must both be true
+- AnnualRevenue > 1000000 checks if revenue exceeds $1M
+- Rating__c != 'Hot' checks if rating is not 'Hot'
+- If both are true, validation fails and shows error
+
+Another Example: Contact Phone Validation
+
+Rule Name: Contact_Phone_Required
+
+Error Condition Formula:
+```
+AND(
+    ISBLANK(Phone),
+    OR(
+        Account.Type == 'Customer',
+        LeadSource__c == 'Web'
+    )
+)
+```
+
+Error Message: "Phone number is required for Customer accounts and Web leads"
+
+Logic Breakdown:
+- ISBLANK(Phone) checks if phone field is empty
+- Account.Type == 'Customer' checks parent account type
+- LeadSource__c == 'Web' checks lead source
+- OR() means either condition makes phone required
+- AND() ensures phone is blank AND one of the conditions is true
+
+Best Practices:
+- Keep formulas simple and readable
+- Use descriptive error messages
+- Test thoroughly with different scenarios
+- Consider user experience - place error messages appropriately
+- For complex business logic, consider Apex triggers instead
+
+Note: Validation rules run before triggers in the order of execution, so they can prevent invalid data from reaching your Apex code.
+
 Trigger Frameworks
 
 Avoid writing logic directly in triggers.
@@ -208,6 +537,44 @@ public class MyScheduler implements Schedulable {
     }
 }
 System.schedule('My Job', '0 0 12 * * ?', new MyScheduler());
+
+Cron Expressions
+Cron expressions in Salesforce are used to schedule jobs at specific times. They consist of 6-7 fields separated by spaces:
+
+Format: Seconds Minutes Hours Day-of-Month Month Day-of-Week [Year]
+
+Field Values:
+- Seconds: 0-59
+- Minutes: 0-59  
+- Hours: 0-23
+- Day-of-Month: 1-31 (or L for last day)
+- Month: 1-12 or JAN-DEC
+- Day-of-Week: 1-7 (1=Sunday) or SUN-SAT
+- Year: 1970-2099 (optional)
+
+Special Characters:
+- * : All values
+- ? : No specific value (used when you don't care about that field)
+- - : Range (e.g., 1-5)
+- , : Multiple values (e.g., MON,WED,FRI)
+- / : Increment (e.g., 0/15 = every 15 minutes)
+- L : Last (last day of month/week)
+
+Examples:
+'0 0 12 * * ?'     → Daily at 12:00 PM
+'0 30 9 * * MON'   → Every Monday at 9:30 AM  
+'0 0 0 1 * ?'      → First day of every month at midnight
+'0 0/30 8-17 * * ?' → Every 30 minutes from 8 AM to 5 PM daily
+'0 0 12 L * ?'     → Last day of every month at noon
+
+The expression '0 0 12 * * ?' breaks down as:
+- 0 seconds
+- 0 minutes  
+- 12 hours (noon)
+- * any day of month
+- * any month
+- ? any day of week (since day of month is specified)
+
 Summary (For Interview + Book)
 Apex is backend logic of Salesforce
 Core = Classes, Data Types, Access Control
@@ -247,6 +614,47 @@ try {
 Partial Success (Database Methods)
 Database.SaveResult[] results = Database.insert(accounts, false);
 false → allows partial success
+
+Iterating Over Database.SaveResult[]
+Database methods return result objects that contain success/failure information for each record. Use these to handle partial successes and errors gracefully.
+
+Database.SaveResult Properties:
+- isSuccess() - Boolean indicating if the operation succeeded
+- getId() - Returns the ID of the successfully inserted/updated record
+- getErrors() - Returns list of Database.Error objects if operation failed
+
+Example: Handling Insert Results
+```apex
+List<Account> accounts = new List<Account>{
+    new Account(Name = 'Account 1'),
+    new Account(Name = 'Account 2'),
+    new Account() // Invalid - missing required Name
+};
+
+Database.SaveResult[] results = Database.insert(accounts, false); // false = allow partial success
+
+for(Integer i = 0; i < results.size(); i++) {
+    Database.SaveResult result = results[i];
+    
+    if(result.isSuccess()) {
+        System.debug('Record ' + i + ' inserted successfully with ID: ' + result.getId());
+    } else {
+        System.debug('Record ' + i + ' failed to insert:');
+        for(Database.Error error : result.getErrors()) {
+            System.debug('Error: ' + error.getMessage());
+            System.debug('Fields: ' + error.getFields());
+        }
+    }
+}
+```
+
+Other Database Result Types:
+- Database.UpsertResult[] - For upsert operations
+- Database.DeleteResult[] - For delete operations  
+- Database.UndeleteResult[] - For undelete operations
+
+Each follows the same pattern: isSuccess(), getId(), getErrors().
+
 3.14 Advanced Asynchronous Apex
 Future vs Queueable vs Batch vs Scheduled
 Feature	Future	Queueable	Batch	Scheduled

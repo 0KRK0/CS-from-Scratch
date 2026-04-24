@@ -76,7 +76,86 @@ Handles caching, security automatically
 
 Example:
 
+Example:
+
 import { getRecord } from 'lightning/uiRecordApi';
+
+lightning-record-form
+A base component for creating, editing, or viewing Salesforce records without writing Apex.
+
+Key Features:
+- Automatic form generation based on object fields
+- Built-in validation and error handling
+- Supports create, edit, and view modes
+- Handles record saving automatically
+
+Basic Usage:
+```html
+<template>
+    <lightning-record-form
+        object-api-name="Account"
+        record-id={recordId}
+        fields={fields}
+        mode="edit"
+        onsuccess={handleSuccess}
+        onerror={handleError}>
+    </lightning-record-form>
+</template>
+```
+
+JavaScript:
+```javascript
+import { LightningElement } from 'lwc';
+
+export default class AccountForm extends LightningElement {
+    recordId = '001XXXXXXXXXXXXXXX'; // For edit mode
+    fields = ['Name', 'Industry', 'AnnualRevenue'];
+    
+    handleSuccess(event) {
+        console.log('Record saved successfully');
+        // Navigate or show toast
+    }
+    
+    handleError(event) {
+        console.error('Error saving record:', event.detail);
+    }
+}
+```
+
+Modes:
+- "view" - Display record (read-only)
+- "edit" - Edit existing record
+- "create" - Create new record
+
+Advanced Features:
+- Custom field layouts using lightning-layout
+- Conditional rendering
+- Integration with other components
+- Custom validation
+
+Example with Custom Layout:
+```html
+<template>
+    <lightning-record-form
+        object-api-name="Account"
+        layout-type="Full"
+        mode="create"
+        onsubmit={handleSubmit}
+        onsuccess={handleSuccess}>
+        
+        <lightning-layout multiple-rows>
+            <lightning-layout-item size="6">
+                <lightning-input-field field-name="Name"></lightning-input-field>
+            </lightning-layout-item>
+            <lightning-layout-item size="6">
+                <lightning-input-field field-name="Industry"></lightning-input-field>
+            </lightning-layout-item>
+        </lightning-layout>
+        
+    </lightning-record-form>
+</template>
+```
+
 4.3 Events
 Custom Events (Child → Parent Communication)
 // child.js
@@ -88,6 +167,113 @@ this.dispatchEvent(new CustomEvent('myevent', {
 handleEvent(event) {
     console.log(event.detail.message);
 }
+Parent to Child Communication
+Use @api decorator to expose properties in child component that parent can set.
+
+Child Component (receives data):
+```javascript
+import { LightningElement, api } from 'lwc';
+
+export default class ChildComponent extends LightningElement {
+    @api message; // Public property set by parent
+    
+    @api childMethod(data) { // Public method callable by parent
+        console.log('Called by parent with:', data);
+    }
+}
+```
+
+Parent Component (sends data):
+```html
+<template>
+    <c-child message={parentMessage}></c-child>
+    <lightning-button label="Send Data" onclick={sendDataToChild}></lightning-button>
+</template>
+```
+
+```javascript
+import { LightningElement } from 'lwc';
+
+export default class ParentComponent extends LightningElement {
+    parentMessage = 'Hello from parent';
+    
+    sendDataToChild() {
+        // Update reactive property
+        this.parentMessage = 'Updated message';
+        
+        // Or call child method
+        this.template.querySelector('c-child').childMethod('Direct call data');
+    }
+}
+```
+
+Complete Example - Bidirectional Communication:
+
+Parent Component:
+```html
+<template>
+    <c-child 
+        message={parentData} 
+        onchilddata={handleChildData}>
+    </c-child>
+    <p>Received from child: {childResponse}</p>
+</template>
+```
+
+```javascript
+export default class ParentComponent extends LightningElement {
+    parentData = 'Initial parent data';
+    childResponse = '';
+    
+    handleChildData(event) {
+        this.childResponse = event.detail.message;
+        console.log('Data from child:', event.detail);
+    }
+    
+    updateChildData() {
+        this.parentData = 'Updated parent data';
+    }
+}
+```
+
+Child Component:
+```html
+<template>
+    <p>Parent says: {message}</p>
+    <lightning-input 
+        label="Child Input" 
+        value={childInput} 
+        onchange={handleInputChange}>
+    </lightning-input>
+    <lightning-button 
+        label="Send to Parent" 
+        onclick={sendToParent}>
+    </lightning-button>
+</template>
+```
+
+```javascript
+import { LightningElement, api } from 'lwc';
+
+export default class ChildComponent extends LightningElement {
+    @api message; // From parent
+    childInput = '';
+    
+    handleInputChange(event) {
+        this.childInput = event.target.value;
+    }
+    
+    sendToParent() {
+        this.dispatchEvent(new CustomEvent('childdata', {
+            detail: { 
+                message: this.childInput,
+                timestamp: new Date().toISOString()
+            }
+        }));
+    }
+}
+```
+
 Pub-Sub Pattern
 Used for communication between unrelated components
 Works when components don’t have direct hierarchy

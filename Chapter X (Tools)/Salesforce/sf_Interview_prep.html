@@ -1,0 +1,1342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Salesforce Interview Prep — 2 YOE Developer</title>
+<style>
+  :root {
+    --bg: #0f1117;
+    --bg2: #1a1d27;
+    --bg3: #22263a;
+    --card: #1e2235;
+    --border: #2e3350;
+    --text: #e2e8f0;
+    --muted: #8892a4;
+    --accent: #00a1e0;
+    --accent2: #032d60;
+    --green: #4bca81;
+    --amber: #ffb75d;
+    --red: #f07070;
+    --purple: #a78bfa;
+    --pink: #f472b6;
+    --mono: 'Fira Code', 'Cascadia Code', 'Courier New', monospace;
+    --sans: 'Segoe UI', system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: var(--sans); font-size: 14px; min-height: 100vh; }
+
+  .layout { display: flex; height: 100vh; overflow: hidden; }
+
+  /* Sidebar */
+  .sidebar {
+    width: 200px; min-width: 200px; background: var(--bg2);
+    border-right: 1px solid var(--border); display: flex; flex-direction: column;
+    overflow-y: auto; padding: 1rem 0;
+  }
+  .sidebar-logo { padding: 0 1rem 1rem; border-bottom: 1px solid var(--border); margin-bottom: 0.5rem; }
+  .sidebar-logo .brand { font-size: 13px; font-weight: 700; color: var(--accent); letter-spacing: 0.02em; }
+  .sidebar-logo .sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .nav-btn {
+    display: flex; align-items: center; gap: 8px; width: 100%;
+    padding: 9px 1rem; background: none; border: none; cursor: pointer;
+    text-align: left; color: var(--muted); font-size: 13px; font-family: var(--sans);
+    transition: all 0.15s; border-left: 3px solid transparent;
+  }
+  .nav-btn:hover { background: var(--bg3); color: var(--text); }
+  .nav-btn.active { color: var(--accent); background: rgba(0,161,224,0.08); border-left-color: var(--accent); font-weight: 600; }
+  .nav-icon { font-size: 15px; width: 18px; text-align: center; }
+
+  /* Main content */
+  .main { flex: 1; overflow-y: auto; padding: 2rem 2.5rem; }
+  .section { display: none; }
+  .section.active { display: block; }
+
+  .section-header { margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border); }
+  .section-header h1 { font-size: 22px; font-weight: 700; color: var(--text); }
+  .section-header p { color: var(--muted); font-size: 13px; margin-top: 6px; }
+
+  /* Cards */
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 1.25rem; margin-bottom: 1rem; }
+  .card-title { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 0.75rem; display: flex; align-items: center; gap: 8px; }
+  .card-title .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .card p, .card li { color: var(--muted); font-size: 13px; line-height: 1.7; }
+  .card ul { padding-left: 1.2rem; }
+  .card li { margin-bottom: 4px; }
+  .card li strong { color: var(--text); font-weight: 600; }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+
+  /* Tags */
+  .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 0.5rem; }
+  .tag { font-size: 11px; padding: 3px 10px; border-radius: 20px; font-weight: 500; }
+  .tag-blue { background: rgba(0,161,224,0.15); color: var(--accent); border: 1px solid rgba(0,161,224,0.3); }
+  .tag-green { background: rgba(75,202,129,0.12); color: var(--green); border: 1px solid rgba(75,202,129,0.25); }
+  .tag-amber { background: rgba(255,183,93,0.12); color: var(--amber); border: 1px solid rgba(255,183,93,0.25); }
+  .tag-red { background: rgba(240,112,112,0.12); color: var(--red); border: 1px solid rgba(240,112,112,0.25); }
+  .tag-purple { background: rgba(167,139,250,0.12); color: var(--purple); border: 1px solid rgba(167,139,250,0.25); }
+
+  /* Code blocks */
+  .code-wrap { margin: 0.75rem 0; }
+  .code-label { font-size: 10px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; padding: 0 0 4px; }
+  .code { background: #0d1117; border: 1px solid var(--border); border-radius: 8px; padding: 1rem; font-family: var(--mono); font-size: 12px; line-height: 1.6; overflow-x: auto; white-space: pre; color: #e2e8f0; }
+  .kw { color: #ff7b72; }
+  .str { color: #a5d6ff; }
+  .cm { color: #6e7681; font-style: italic; }
+  .fn { color: #d2a8ff; }
+  .num { color: #f8c555; }
+  .cls { color: #ffa657; }
+  .ann { color: #7ee787; }
+
+  /* Q&A accordion */
+  .qa-section { margin-top: 1rem; }
+  .qa-label { font-size: 11px; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.75rem; display: flex; align-items: center; gap: 6px; }
+  .qa-item { border: 1px solid var(--border); border-radius: 8px; margin-bottom: 8px; overflow: hidden; }
+  .qa-q { padding: 0.75rem 1rem; background: var(--bg3); font-size: 13px; font-weight: 500; cursor: pointer; color: var(--text); display: flex; justify-content: space-between; align-items: center; user-select: none; }
+  .qa-q:hover { background: #2a2f45; }
+  .qa-chevron { font-size: 10px; color: var(--muted); transition: transform 0.2s; }
+  .qa-a { display: none; padding: 0.85rem 1rem; font-size: 13px; color: var(--muted); line-height: 1.7; border-top: 1px solid var(--border); background: var(--card); }
+  .qa-a.open { display: block; }
+  .qa-a strong { color: var(--text); }
+  .qa-a code { background: rgba(0,161,224,0.1); padding: 1px 6px; border-radius: 4px; font-family: var(--mono); font-size: 11px; color: var(--accent); }
+
+  /* Steps */
+  .steps { list-style: none; }
+  .steps li { display: flex; gap: 10px; padding: 6px 0; align-items: flex-start; }
+  .step-n { min-width: 22px; height: 22px; border-radius: 50%; background: rgba(0,161,224,0.15); border: 1px solid rgba(0,161,224,0.35); color: var(--accent); font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+  .step-t { font-size: 13px; color: var(--muted); line-height: 1.6; }
+  .step-t strong { color: var(--text); }
+
+  /* Governor limits table */
+  table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  th { background: var(--bg3); color: var(--text); font-weight: 600; padding: 8px 12px; text-align: left; border-bottom: 1px solid var(--border); }
+  td { padding: 8px 12px; border-bottom: 1px solid rgba(46,51,80,0.5); color: var(--muted); }
+  tr:hover td { background: rgba(255,255,255,0.02); }
+  td:first-child { color: var(--text); font-weight: 500; }
+  td.limit { color: var(--amber); font-family: var(--mono); }
+
+  /* Info callout */
+  .callout { padding: 0.75rem 1rem; border-radius: 8px; margin: 0.75rem 0; font-size: 13px; line-height: 1.6; }
+  .callout-blue { background: rgba(0,161,224,0.08); border-left: 3px solid var(--accent); color: var(--muted); }
+  .callout-green { background: rgba(75,202,129,0.08); border-left: 3px solid var(--green); color: var(--muted); }
+  .callout-amber { background: rgba(255,183,93,0.08); border-left: 3px solid var(--amber); color: var(--muted); }
+  .callout strong { color: var(--text); }
+  .compare-row { display: flex; gap: 1rem; margin-bottom: 1rem; }
+  .compare-row .card { flex: 1; }
+
+  h2 { font-size: 16px; font-weight: 600; color: var(--text); margin: 1.5rem 0 0.75rem; }
+  h2:first-child { margin-top: 0; }
+
+  @media (max-width: 768px) {
+    .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    .main { padding: 1rem; }
+    .sidebar { width: 160px; min-width: 160px; }
+  }
+</style>
+</head>
+<body>
+<div class="layout">
+
+<!-- Sidebar -->
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <div class="brand">⚡ SF Prep</div>
+    <div class="sub">2 YOE Developer Guide</div>
+  </div>
+  <button class="nav-btn active" onclick="show('arch', this)"><span class="nav-icon">🏗</span> Architecture</button>
+  <button class="nav-btn" onclick="show('security', this)"><span class="nav-icon">🔐</span> Security</button>
+  <button class="nav-btn" onclick="show('admin', this)"><span class="nav-icon">⚙️</span> Admin</button>
+  <button class="nav-btn" onclick="show('dev', this)"><span class="nav-icon">💻</span> Development</button>
+  <button class="nav-btn" onclick="show('integration', this)"><span class="nav-icon">🔗</span> Integration</button>
+  <button class="nav-btn" onclick="show('testing', this)"><span class="nav-icon">🧪</span> Testing</button>
+  <button class="nav-btn" onclick="show('config', this)"><span class="nav-icon">🎛</span> Configuration</button>
+  <button class="nav-btn" onclick="show('reports', this)"><span class="nav-icon">📊</span> Reports & Dashboards</button>
+</nav>
+
+<!-- Main -->
+<main class="main">
+
+<!-- ===================== ARCHITECTURE ===================== -->
+<div class="section active" id="arch">
+  <div class="section-header">
+    <h1>🏗 Salesforce Architecture</h1>
+    <p>Core platform concepts every developer must know cold.</p>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title"><span class="dot" style="background:#00a1e0"></span>Multi-Tenant Architecture</div>
+      <p>Multiple customers share the same physical infrastructure (servers, DB) but data is completely isolated. Salesforce uses a <strong style="color:var(--text)">metadata-driven kernel</strong> where every org's configuration is stored as metadata, not separate schemas.</p>
+      <div class="tags"><span class="tag tag-blue">Shared Infrastructure</span><span class="tag tag-green">Data Isolation</span><span class="tag tag-amber">Metadata Kernel</span></div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="dot" style="background:#4bca81"></span>Metadata-Driven Development</div>
+      <p>Everything in Salesforce — objects, fields, workflows, layouts, code — is stored as <strong style="color:var(--text)">metadata</strong>. This means configs can be migrated between orgs using <strong style="color:var(--text)">Change Sets, Metadata API, or SFDX</strong>.</p>
+      <div class="tags"><span class="tag tag-green">Declarative</span><span class="tag tag-blue">Portable</span><span class="tag tag-purple">Versionable</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="dot" style="background:#a78bfa"></span>MVC Pattern in Salesforce</div>
+    <div class="grid-3" style="margin-top:0.75rem">
+      <div style="text-align:center;padding:1rem;background:var(--bg3);border-radius:8px">
+        <div style="font-size:24px;margin-bottom:6px">📦</div>
+        <div style="font-weight:600;color:var(--text);font-size:13px">Model</div>
+        <div style="color:var(--muted);font-size:12px;margin-top:4px">Objects, Fields, Relationships, Validations</div>
+      </div>
+      <div style="text-align:center;padding:1rem;background:var(--bg3);border-radius:8px">
+        <div style="font-size:24px;margin-bottom:6px">🖼</div>
+        <div style="font-weight:600;color:var(--text);font-size:13px">View</div>
+        <div style="color:var(--muted);font-size:12px;margin-top:4px">LWC, Aura, Visualforce, App Builder</div>
+      </div>
+      <div style="text-align:center;padding:1rem;background:var(--bg3);border-radius:8px">
+        <div style="font-size:24px;margin-bottom:6px">⚙️</div>
+        <div style="font-weight:600;color:var(--text);font-size:13px">Controller</div>
+        <div style="color:var(--muted);font-size:12px;margin-top:4px">Apex Classes, Triggers, Flows</div>
+      </div>
+    </div>
+  </div>
+
+  <h2>Governor Limits — Know These Numbers</h2>
+  <div class="card">
+    <table>
+      <tr><th>Limit</th><th>Synchronous</th><th>Async (Batch/Future)</th></tr>
+      <tr><td>SOQL Queries</td><td class="limit">100</td><td class="limit">200</td></tr>
+      <tr><td>DML Statements</td><td class="limit">150</td><td class="limit">150</td></tr>
+      <tr><td>SOQL Rows returned</td><td class="limit">50,000</td><td class="limit">50,000</td></tr>
+      <tr><td>DML Rows processed</td><td class="limit">10,000</td><td class="limit">10,000</td></tr>
+      <tr><td>CPU Time</td><td class="limit">10,000 ms</td><td class="limit">60,000 ms</td></tr>
+      <tr><td>Heap Size</td><td class="limit">6 MB</td><td class="limit">12 MB</td></tr>
+      <tr><td>Callouts per transaction</td><td class="limit">100</td><td class="limit">100</td></tr>
+      <tr><td>Future methods</td><td class="limit">50</td><td class="limit">—</td></tr>
+      <tr><td>Queueable jobs</td><td class="limit">50</td><td class="limit">—</td></tr>
+      <tr><td>Email invocations</td><td class="limit">10</td><td class="limit">10</td></tr>
+    </table>
+    <div class="callout callout-amber" style="margin-top:0.75rem"><strong>Key Rule:</strong> Governor Limits are per-transaction, not per-user or per-day. They exist to protect the shared multi-tenant environment.</div>
+  </div>
+
+  <h2>Salesforce Platform Layers</h2>
+  <div class="card">
+    <ul class="steps">
+      <li><span class="step-n">1</span><span class="step-t"><strong>Infrastructure Layer</strong> — Servers, databases, network managed by Salesforce</span></li>
+      <li><span class="step-n">2</span><span class="step-t"><strong>Platform Layer</strong> — Core CRM, object model, security engine, workflow engine</span></li>
+      <li><span class="step-n">3</span><span class="step-t"><strong>Application Layer</strong> — Sales Cloud, Service Cloud, Marketing Cloud (pre-built apps on the platform)</span></li>
+      <li><span class="step-n">4</span><span class="step-t"><strong>Custom Layer</strong> — Your org's custom objects, Apex, LWC, integrations</span></li>
+    </ul>
+    <div class="callout callout-blue" style="margin-top:0.75rem"><strong>Platform = Force.com / Salesforce Platform.</strong> You build on Layer 4, using tools from Layers 2 & 3.</div>
+  </div>
+
+  <h2>Standard Object Relationships</h2>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title"><span class="dot" style="background:#ffa657"></span>Lookup Relationship</div>
+      <ul>
+        <li>Loosely coupled — child can exist without parent</li>
+        <li>Does <strong>not</strong> inherit parent OWD</li>
+        <li>Max 25 lookup fields per object</li>
+        <li>No cascade delete (by default)</li>
+        <li>Example: Contact lookup to Account</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="dot" style="background:#f472b6"></span>Master-Detail Relationship</div>
+      <ul>
+        <li>Tightly coupled — child cannot exist without parent</li>
+        <li>Child <strong>inherits</strong> parent's OWD sharing</li>
+        <li>Enables Roll-Up Summary fields on parent</li>
+        <li>Cascade delete on parent delete</li>
+        <li>Max 2 master-detail per object</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="qa-section">
+    <div class="qa-label">🎤 Interview Questions — Architecture</div>
+    <div class="qa-item"><div class="qa-q" onclick="toggleQA(this)">What is multi-tenancy? How does Salesforce isolate org data? <span class="qa-chevron">▼</span></div>
+      <div class="qa-a">Multi-tenancy means multiple customers share the same physical servers and database. Salesforce isolates data using an <strong>Org ID</strong> column on every table. All queries are automatically filtered by Org ID at the database level, invisible to developers. The metadata kernel stores each org's schema as data rather than separate DB schemas.</div>
+    </div>
+    <div class="qa-item"><div class="qa-q" onclick="toggleQA(this)">Why do Governor Limits exist? How do you handle them? <span class="qa-chevron">▼</span></div>
+      <div class="qa-a">Governor limits prevent any single tenant from monopolizing shared resources. To handle them: <strong>bulkify all code</strong> (never put SOQL/DML inside loops), use <code>Collections</code> to batch operations, use <code>Database.QueryLocator</code> for large datasets in Batch Apex, and query outside loops then process in-memory with Maps.</div>
+    </div>
+    <div class="qa-item"><div class="qa-q" onclick="toggleQA(this)">Difference between Lookup and Master-Detail relationship? <span class="qa-chevron">▼</span></div>
+      <div class="qa-a">Key differences: (1) <strong>Dependency</strong> — Lookup child can exist without parent, MD child cannot. (2) <strong>Sharing</strong> — MD child inherits parent OWD, Lookup does not. (3) <strong>Roll-Up</strong> — Only MD supports Roll-Up Summary fields. (4) <strong>Delete</strong> — Deleting MD parent cascades to children. (5) <strong>Limit</strong> — Max 2 MD per object, 25 lookups.</div>
+    </div>
+    <div class="qa-item"><div class="qa-q" onclick="toggleQA(this)">What is the difference between Force.com and Salesforce Platform? <span class="qa-chevron">▼</span></div>
+      <div class="qa-a">They are the same — Force.com was the original brand name, rebranded to <strong>Salesforce Platform</strong>. It is the PaaS (Platform as a Service) layer that provides the development environment (Apex, SOQL, LWC, APIs) on which all Salesforce clouds (Sales, Service, etc.) are built.</div>
+    </div>
+    <div class="qa-item"><div class="qa-q" onclick="toggleQA(this)">What is a Junction Object? When do you use it? <span class="qa-chevron">▼</span></div>
+      <div class="qa-a">A Junction Object is a custom object with <strong>two Master-Detail relationships</strong>, implementing a many-to-many relationship. Example: A Student can be enrolled in many Courses, and a Course can have many Students — an <code>Enrollment__c</code> junction object bridges them. Both parent MD fields are required, so the junction record is always linked to both parents.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== SECURITY ===================== -->
+<div class="section" id="security">
+  <div class="section-header">
+    <h1>🔐 Salesforce Security</h1>
+    <p>Layered security model — object, field, and record level access control.</p>
+  </div>
+
+  <div class="callout callout-blue"><strong>Security Layers:</strong> Org Access → Object Access (CRUD) → Field Access (FLS) → Record Access (OWD + Role Hierarchy + Sharing Rules)</div>
+
+  <div class="grid-2" style="margin-top:1rem">
+    <div class="card">
+      <div class="card-title"><span class="dot" style="background:#00a1e0"></span>Profiles</div>
+      <ul>
+        <li>Every user must have exactly <strong>one profile</strong></li>
+        <li>Controls: Object CRUD, Field FLS, App access, Tab visibility, Page Layouts, Login hours/IP</li>
+        <li>Acts as the <strong>baseline</strong> permission set</li>
+        <li>Standard profiles (System Admin, Standard User) can't be deleted</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="dot" style="background:#4bca81"></span>Permission Sets</div>
+      <ul>
+        <li>Grant <strong>additional permissions</strong> on top of profile</li>
+        <li>A user can have multiple permission sets</li>
+        <li>More granular — can be assigned without changing profile</li>
+        <li>Best practice: Use minimal-access profile + permission sets</li>
+        <li><strong>Permission Set Groups</strong> bundle multiple permission sets</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2>Record-Level Security Stack</h2>
+  <div class="card">
+    <ul class="steps">
+      <li><span class="step-n">1</span><span class="step-t"><strong>OWD (Org-Wide Defaults)</strong> — The baseline for every record. Options: Private | Public Read Only | Public Read/Write | Controlled by Parent</span></li>
+      <li><span class="step-n">2</span><span class="step-t"><strong>Role Hierarchy</strong> — Users above in hierarchy automatically get access to records owned by users below them. Upward visibility only.</span></li>
+      <li><span class="step-n">3</span><span class="step-t"><strong>Sharing Rules</strong> — Extend access beyond OWD+hierarchy. Ownership-based or Criteria-based. Cannot restrict access, only expand.</span></li>
+      <li><span class="step-n">4</span><span class="step-t"><strong>Manual Sharing</strong> — Record owner or admin manually shares individual records with users/groups.</span></li>
+      <li><span class="step-n">5</span><span class="step-t"><strong>Apex Sharing (Programmatic)</strong> — Use <code>Account__Share</code> objects to share records in code.</span></li>
+    </ul>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title"><span class="dot" style="background:#ffb75d"></span>OWD Values Explained</div>
+      <ul>
+        <li><strong>Private</strong> — Only owner + above in hierarchy</li>
+        <li><strong>Public Read Only</strong> — Everyone can view, only owner can edit</li>
+        <li><strong>Public Read/Write</strong> — Everyone can view and edit</li>
+        <li><strong>Controlled by Parent</strong> — Used in Lookup/MD relationships — inherits parent's access</li>
+        <li>Start with most restrictive (Private), then open up with sharing rules</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="dot" style="background:#f472b6"></span>Field-Level Security (FLS)</div>
+      <ul>
+        <li>Controls visibility and editability per field per profile/permission set</li>
+        <li>3 states: <strong>Visible + Editable</strong>, <strong>Visible + Read Only</strong>, <strong>Hidden</strong></li>
+        <li>FLS respected automatically in UI</li>
+        <li>In Apex: use <code>Schema.SObjectField.getDescribe()</code> or <code>WITH SECURITY_ENFORCED</code> in SOQL</li>
+        <li>System Admin bypasses FLS</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2>with sharing vs without sharing in Apex</h2>
+  <div class="card">
+    <div class="code-wrap">
+      <div class="code-label">Apex — Sharing Keywords</div>
+      <div class="code"><span class="cm">// Respects running user's sharing rules (RECOMMENDED default)</span>
+<span class="kw">public with sharing class</span> <span class="cls">AccountController</span> {
+    <span class="kw">public</span> List&lt;Account&gt; getAccounts() {
+        <span class="cm">// Only returns records the running user can see</span>
+        <span class="kw">return</span> [<span class="kw">SELECT</span> Id, Name <span class="kw">FROM</span> Account];
+    }
+}
+
+<span class="cm">// Ignores sharing rules — runs in system context (use carefully)</span>
+<span class="kw">public without sharing class</span> <span class="cls">InternalProcessor</span> {
+    <span class="cm">// Returns ALL records regardless of sharing</span>
+}
+
+<span class="cm">// Inherits sharing from the class that calls it (default if not specified)</span>
+<span class="kw">public inherited sharing class</span> <span class="cls">SharedHelper</span> { }
+</div>
+    </div>
+    <div class="callout callout-amber"><strong>Best Practice:</strong> Always use <code>with sharing</code> unless you have a specific reason not to. System Admin bypasses sharing anyway, so it only affects non-admin users.</div>
+  </div>
+
+  <h2>Config Steps — Creating Sharing Rules</h2>
+  <div class="card">
+    <ul class="steps">
+      <li><span class="step-n">1</span><span class="step-t">Go to <strong>Setup → Security → Sharing Settings</strong></span></li>
+      <li><span class="step-n">2</span><span class="step-t">Set OWD for the object (e.g., Account = Private)</span></li>
+      <li><span class="step-n">3</span><span class="step-t">Scroll to the object's Sharing Rules section → click <strong>New</strong></span></li>
+      <li><span class="step-n">4</span><span class="step-t">Choose <strong>Ownership-based</strong> (by record owner) or <strong>Criteria-based</strong> (by field values)</span></li>
+      <li><span class="step-n">5</span><span class="step-t">Select who to share <strong>from</strong> (roles/groups) and who to share <strong>with</strong></span></li>
+      <li><span class="step-n">6</span><span class="step-t">Set access level: <strong>Read Only</strong> or <strong>Read/Write</strong> → Save</span></li>
+    </ul>
+  </div>
+
+  <h2>Apex — Programmatic Sharing</h2>
+  <div class="card">
+    <div class="code-wrap">
+      <div class="code-label">Apex — Manual Sharing via Code</div>
+      <div class="code"><span class="cm">// Share an Account record with a specific User</span>
+<span class="cls">AccountShare</span> share = <span class="kw">new</span> <span class="cls">AccountShare</span>();
+share.AccountId = accountId;
+share.UserOrGroupId = userId;
+share.AccountAccessLevel = <span class="str">'Edit'</span>;
+share.OpportunityAccessLevel = <span class="str">'Read'</span>;
+share.RowCause = <span class="cls">Schema</span>.AccountShare.RowCause.Manual;
+
+<span class="kw">insert</span> share;
+</div>
+    </div>
+  </div>
+
+  <div class="qa-section">
+    <div class="qa-label">🎤 Interview Questions — Security</div>
+    <div class="qa-item"><div class="qa-q" onclick="toggleQA(this)">What is the difference between Profile and Permission Set? <span class="qa-chevron">▼</span></div>
+      <div class="qa-a"><strong>Profile</strong>: Every user has exactly one. Sets the baseline permissions (object CRUD, FLS, login hours). Cannot grant more access than available. <strong>Permission Set</strong>: Additive layer — grants extra permissions on top of profile. One user can have multiple. Modern best practice is minimal-access profile + permission sets for flexibility.</div>
+    </div>
+    <div class="qa-item"><div class="qa-q" onclick="toggleQA(this)">Can sharing rules restrict access? <span class="qa-chevron">▼</span></div>
+      <div class="qa-a"><strong>No.</strong> Sharing rules can only <strong>expand</strong> access beyond OWD. They cannot restrict it. To restrict access, you must lower the OWD or use more restrictive profiles. If you need record-level restriction below OWD, that's not possible declaratively — it requires a custom approach.</div>
+    </div>
+    <div class="qa-item"><div class="qa-q" onclick="toggleQA(this)">What is "with sharing" vs "without sharing" in Apex? <span class="qa-chevron">▼</span></div>
+      <div class="qa-a"><code>with sharing</code>: Apex class respects the running user's sharing rules — users only see records they have access to. <code>without sharing</code>: Ignores all sharing rules, runs as system. If a class doesn't declare either, it <strong>inherits</strong> the sharing context of the calling class. Always prefer <code>with sharing</code> unless doing background system processing where record visibility context doesn't apply.</div>
+    </div>
+    <div class="qa-item"><div class="qa-q" onclick="toggleQA(this)">Explain CRUD vs FLS and how to enforce them in Apex <span class="qa-chevron">▼</span></div>
+      <div class="qa-a"><strong>CRUD</strong>: Create, Read, Update, Delete at the object level. <strong>FLS</strong>: Field-level visibility/editability. In Apex, these are NOT automatically enforced — you must check manually. Use <code>Schema.sObjectType.Account.isCreateable()</code> for CRUD, <code>Schema.sObjectType.Account.fields.Name.isUpdateable()</code> for FLS. OR use <code>WITH SECURITY_ENFORCED</code> in SOQL (throws exception if FLS violated) or <code>stripInaccessible()</code> to remove inaccessible fields.</div>
+    </div>
+    <div class="qa-item"><div class="qa-q" onclick="toggleQA(this)">What are the different ways to give record access to a user? <span class="qa-chevron">▼</span></div>
+      <div class="qa-a">5 ways: (1) <strong>OWD</strong> — make it public. (2) <strong>Role Hierarchy</strong> — put user higher in hierarchy. (3) <strong>Sharing Rules</strong> — criteria or ownership based. (4) <strong>Manual Sharing</strong> — owner clicks Share button. (5) <strong>Apex Managed Sharing</strong> — programmatically insert Share records with custom RowCause.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== ADMIN ===================== -->
+<div class="section" id="admin">
+  <div class="section-header">
+    <h1>⚙️ Salesforce Admin</h1>
+    <p>Declarative automation, validation, and process management.</p>
+  </div>
+
+  <h2>Automation Tools — Which to Use When</h2>
+  <div class="card">
+    <table>
+      <tr><th>Tool</th><th>Trigger</th><th>DML Support</th><th>Status</th></tr>
+      <tr><td>Workflow Rules</td><td>Record save</td><td>Field updates, emails, tasks, outbound msg</td><td class="limit">Legacy (avoid)</td></tr>
+      <tr><td>Process Builder</td><td>Record save / Platform event</td><td>Create/update records, invoke flows</td><td class="limit">Legacy (avoid)</td></tr>
+      <tr><td>Flow (Record-Triggered)</td><td>Before/After record save</td><td>Full DML, create/update/delete</td><td style="color:var(--green)">Current ✓</td></tr>
+      <tr><td>Flow (Scheduled)</td><td>Time-based schedule</td><td>Full DML, batch processing</td><td style="color:var(--green)">Current ✓</td></tr>
+      <tr><td>Flow (Screen)</td><td>User interaction</td><td>Full DML, UI wizards</td><td style="color:var(--green)">Current ✓</td></tr>
+      <tr><td>Approval Process</td><td>Submitted for approval</td><td>Field updates, emails, tasks</td><td style="color:var(--green)">Current ✓</td></tr>
+    </table>
+    <div class="callout callout-amber" style="margin-top:0.75rem"><strong>Salesforce direction:</strong> Migrate all Workflow Rules and Process Builder to Flow. New automation should always use Flow.</div>
+  </div>
+
+  <h2>Validation Rules</h2>
+  <div class="card">
+    <p style="margin-bottom:0.75rem">Validation Rules use a formula that returns <strong>TRUE to block the save</strong>. If the formula evaluates to true, the error message displays and the record is not saved.</p>
+    <div class="code-wrap">
+      <div class="code-label">Validation Rule Formula Examples</div>
+      <div class="code"><span class="cm">-- Example 1: Phone required when status is Active</span>
+AND(ISPICKVAL(Status__c, "Active"), ISBLANK(Phone))
+
+<span class="cm">-- Example 2: Close date must be in future for new opportunities</span>
+AND(ISNEW(), CloseDate &lt; TODAY())
+
+<span class="cm">-- Example 3: Discount cannot exceed 20% without manager approval</span>
+AND(Discount__c > 20, NOT(Manager_Approved__c))
+
+<span class="cm">-- Example 4: Custom email format validation</span>
+AND(NOT(ISBLANK(Email__c)), NOT(REGEX(Email__c, "[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}")))
+</div>
+    </div>
+    <div class="callout callout-blue"><strong>Key functions:</strong> ISBLANK(), ISNEW(), ISCHANGED(), ISPICKVAL(), AND(), OR(), NOT(), REGEX(), CONTAINS(), TODAY(), NOW()</div>
+  </div>
+
+  <h2>Flow — Record-Triggered Flow</h2>
+  <div class="card">
+    <ul class="steps">
+      <li><span class="step-n">1</span><span class="step-t"><strong>Setup → Flows → New Flow</strong> → Choose "Record-Triggered Flow"</span></li>
+      <li><span class="step-n">2</span><span class="step-t">Select the <strong>Object</strong> (e.g., Opportunity), trigger: Created and/or Updated</span></li>
+      <li><span class="step-n">3</span><span class="step-t">Choose <strong>Before Save</strong> (no DML, faster, update triggering record directly) or <strong>After Save</strong> (can do DML on related records)</span></li>
+      <li><span class="step-n">4</span><span class="step-t">Add <strong>Entry Conditions</strong> to control when flow runs (e.g., Stage changed to Closed Won)</span></li>
+      <li><span class="step-n">5</span><span class="step-t">Build your logic using: <strong>Assignments, Decisions, Loops, Get Records, Create Records, Update Records, Delete Records, Subflows, Actions</strong></span></li>
+      <li><span class="step-n">6</span><span class="step-n" style="background:rgba(75,202,129,0.15);border-color:rgba(75,202,129,0.35);color:var(--green)">✓</span><span class="step-t">Activate the flow — it goes live immediately</span></li>
+    </ul>
+  </div>
+
+  <h2>Approval Processes</h2>
+  <div class="card">
+    <p style="margin-bottom:0.75rem">Multi-step approval workflow for records. Common use case: Discount approval, Opportunity approval, Leave request.</p>
+    <ul class="steps">
+      <li><span class="step-n">1</span><span class="step-t"><strong>Setup → Approval Processes → New</strong> → Choose object</span></li>
+      <li><span class="step-n">2</span><span class="step-t">Define <strong>entry criteria</strong> (when can a record be submitted?)</span></li>
+      <li><span class="step-n">3</span><span class="step-t">Set <strong>approver</strong> — User, Queue, Manager from hierarchy, or related user</span></li>
+      <li><span class="step-n">4</span><span class="step-n">4</span><span class="step-t">Configure <strong>approval actions</strong> (field updates on submit, approve, reject, recall)</span></li>
+      <li><span class="step-n">5</span><span class="step-t">Add more steps for multi-level approval (e.g., Manager → VP → CEO)</span></li>
+    </ul>
+    <div class="callout callout-green" style="margin-top:0.75rem"><strong>Tip:</strong> Records are locked during approval. Approvers receive email or Chatter notifications. Can also approve via mobile.</div>
+  </div>
+
+  <div class="qa-section">
+    <div class="qa-label">🎤 Interview Questions — Admin</div>
+    <div class="qa-item"><div class="qa-q" onclick="toggleQA(this)">What is the difference between Before Save and After Save in Record-Triggered Flow? <span class="qa-chevron">▼</span></div>
+      <div class="qa-a"><strong>Before Save</strong>: Runs before the record is committed to DB. Can update the triggering record's fields directly (no DML needed — just use Assignment to set field values on {!$Record}). Faster. Cannot access record Id (not yet created). Cannot do DML on other records. <br><br><strong>After Save</strong>: Runs after record is in DB. Can do DML on related records. Has record Id. Slower. Use After Save when you need to create/update child records.</div>
+    </div>
+    <div class="qa-item"><div class="qa-q" onclick="toggleQA(this)">Validation Rule vs Flow vs Apex Trigger — when do you use which? <span class="qa-chevron">▼</span></div>
+      <div class="qa-a"><strong>Validation Rule</strong>: Simple field-level data quality checks that block save. No business logic. <strong>Flow</strong>: Business automation that doesn't require complex coding — record updates, related record creation, sending emails, calling external services. <strong>Apex Trigger</strong>: Complex logic, multiple objects, callouts, error handling, third-party library use, or when Flow can't handle it. Prefer declarative (Flow) over code; use Apex when Flow is insufficient.</div>
+    </div>
+    <div class="qa-item"><div class="qa-q" onclick="toggleQA(this)">What are the Order of Execution in Salesforce? <span class="qa-chevron">▼</span></div>
+      <div class="qa-a">Simplified order on record save: (1) System Validation (required fields, data types). (2) Before Triggers. (3) Custom Validation Rules. (4) Duplicate Rules. (5) Record saved to DB (not committed). (6) After Triggers. (7) Assignment Rules. (8) Auto-response Rules. (9) Workflow Rules (field updates re-fire triggers). (10) Process Builder / Flows. (11) Escalation Rules. (12) Commit to DB. (13) Post-commit logic (sending emails, async queueable). <strong>Critical: Workflow field updates re-fire Before + After triggers!</strong></div>
+    </div>
+    <div class="qa-item"><div class="qa-q" onclick="toggleQA(this)">What are Roll-Up Summary fields and when can't you use them? <span class="qa-chevron">▼</span></div>
+      <div class="qa-a">Roll-Up Summary fields on a parent object aggregate child record data: COUNT, SUM, MIN, MAX. Only available when the child has a <strong>Master-Detail relationship</strong> to the parent (not lookup). You cannot use them with Lookup relationships, cross-object (grandparent), or when the child is on the many side of a lookup. Alternative: use Flow or Apex trigger to calculate and update the parent.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== DEVELOPMENT ===================== -->
+<div class="section" id="dev">
+  <div class="section-header">
+    <h1>💻 Salesforce Development</h1>
+    <p>Apex, LWC, SOQL, Triggers — the core developer toolkit.</p>
+  </div>
+
+  <h2>Apex Trigger — Best Practice Pattern</h2>
+  <div class="card">
+    <div class="callout callout-amber" style="margin-bottom:0.75rem"><strong>One Trigger Per Object</strong> rule. Never put logic inside triggers. Delegate to a handler class.</div>
+    <div class="code-wrap">
+      <div class="code-label">Apex — Trigger + Handler Pattern</div>
+      <div class="code"><span class="cm">// AccountTrigger.trigger — THIN trigger, no logic here</span>
+<span class="kw">trigger</span> AccountTrigger <span class="kw">on</span> Account (
+    before insert, before update, before delete,
+    after insert, after update, after delete, after undelete
+) {
+    <span class="cls">AccountTriggerHandler</span>.handle(Trigger.new, Trigger.old,
+        Trigger.newMap, Trigger.oldMap, Trigger.operationType);
+}
+
+<span class="cm">// AccountTriggerHandler.cls — all logic here</span>
+<span class="kw">public with sharing class</span> <span class="cls">AccountTriggerHandler</span> {
+    <span class="kw">public static void</span> <span class="fn">handle</span>(
+        List&lt;Account&gt; newList, List&lt;Account&gt; oldList,
+        Map&lt;Id, Account&gt; newMap, Map&lt;Id, Account&gt; oldMap,
+        System.TriggerOperation opType
+    ) {
+        <span class="kw">switch on</span> opType {
+            <span class="kw">when</span> BEFORE_INSERT { <span class="fn">onBeforeInsert</span>(newList); }
+            <span class="kw">when</span> BEFORE_UPDATE { <span class="fn">onBeforeUpdate</span>(newList, oldMap); }
+            <span class="kw">when</span> AFTER_INSERT  { <span class="fn">onAfterInsert</span>(newList); }
+            <span class="kw">when</span> AFTER_UPDATE  { <span class="fn">onAfterUpdate</span>(newList, oldMap); }
+        }
+    }
+
+    <span class="kw">private static void</span> <span class="fn">onBeforeInsert</span>(List&lt;Account&gt; newList) {
+        <span class="cm">// Bulkified: loop over list, not individual records</span>
+        <span class="kw">for</span> (Account acc : newList) {
+            <span class="kw">if</span> (acc.Industry == <span class="str">null</span>) acc.Industry = <span class="str">'Technology'</span>;
+        }
+    }
+
+    <span class="kw">private static void</span> <span class="fn">onAfterInsert</span>(List&lt;Account&gt; newList) {
+        <span class="cm">// Create related Contact after Account created</span>
+        List&lt;Contact&gt; contacts = <span class="kw">new</span> List&lt;Contact&gt;();
+        <span class="kw">for</span> (Account acc : newList) {
+            contacts.add(<span class="kw">new</span> Contact(
+                LastName = acc.Name + <span class="str">' Contact'</span>,
+                AccountId = acc.Id
+            ));
+        }
+        <span class="kw">if</span> (!contacts.isEmpty()) <span class="kw">insert</span> contacts;
+    }
+}
+</div>
+    </div>
+  </div>
+
+  <h2>SOQL & SOSL</h2>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title"><span class="dot" style="background:#00a1e0"></span>SOQL — Salesforce Object Query Language</div>
+      <div class="code-wrap">
+        <div class="code"><span class="cm">// Basic query</span>
+[<span class="kw">SELECT</span> Id, Name, Industry
+ <span class="kw">FROM</span> Account
+ <span class="kw">WHERE</span> Industry = <span class="str">'Technology'</span>
+ <span class="kw">ORDER BY</span> Name <span class="kw">LIMIT</span> <span class="num">100</span>];
+
+<span class="cm">// Relationship query (child-to-parent)</span>
+[<span class="kw">SELECT</span> Id, Name, Account.Name
+ <span class="kw">FROM</span> Contact
+ <span class="kw">WHERE</span> Account.Industry = <span class="str">'Tech'</span>];
+
+<span class="cm">// Parent-to-child subquery</span>
+[<span class="kw">SELECT</span> Id, Name,
+   (<span class="kw">SELECT</span> Id, LastName <span class="kw">FROM</span> Contacts)
+ <span class="kw">FROM</span> Account];
+
+<span class="cm">// Aggregate query</span>
+[<span class="kw">SELECT</span> Industry, <span class="fn">COUNT</span>(Id)
+ <span class="kw">FROM</span> Account
+ <span class="kw">GROUP BY</span> Industry];
+
+<span class="cm">// WITH SECURITY_ENFORCED (FLS check)</span>
+[<span class="kw">SELECT</span> Id, Name <span class="kw">FROM</span> Account
+ <span class="kw">WITH SECURITY_ENFORCED</span>];
+</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="dot" style="background:#4bca81"></span>SOSL — Salesforce Object Search Language</div>
+      <div class="code-wrap">
+        <div class="code"><span class="cm">// Search across multiple objects at once</span>
+<span class="kw">FIND</span> {<span class="str">'Acme'</span>} <span class="kw">IN ALL FIELDS</span>
+<span class="kw">RETURNING</span>
+    Account(Id, Name),
+    Contact(Id, FirstName, LastName),
+    Lead(Id, Name);
+
+<span class="cm">// Search specific field groups</span>
+<span class="kw">FIND</span> {<span class="str">'John*'</span>} <span class="kw">IN NAME FIELDS</span>
+<span class="kw">RETURNING</span> Contact(Id, Name
+    <span class="kw">WHERE</span> AccountId != <span class="kw">null</span>);
+
+<span class="cm">// In Apex</span>
+List&lt;List&lt;SObject&gt;&gt; results = [<span class="kw">FIND</span>
+    :searchTerm <span class="kw">IN ALL FIELDS</span>
+    <span class="kw">RETURNING</span> Account(Id, Name)];
+List&lt;Account&gt; accounts = (List&lt;Account&gt;) results[<span class="num">0</span>];
+</div>
+      </div>
+      <div class="callout callout-blue" style="margin-top:0.75rem"><strong>SOQL</strong> = specific object, structured. <strong>SOSL</strong> = full-text search across multiple objects simultaneously.</div>
+    </div>
+  </div>
+
+  <h2>Asynchronous Apex</h2>
+  <div class="card">
+    <div class="grid-3" style="margin-bottom:1rem">
+      <div style="background:var(--bg3);padding:0.75rem;border-radius:8px">
+        <div style="font-weight:600;color:var(--text);font-size:13px;margin-bottom:6px">@future</div>
+        <div style="font-size:12px;color:var(--muted)">Run single method async. No chaining. Accepts primitive params only. Good for simple callouts.</div>
+      </div>
+      <div style="background:var(--bg3);padding:0.75rem;border-radius:8px">
+        <div style="font-weight:600;color:var(--text);font-size:13px;margin-bottom:6px">Queueable</div>
+        <div style="font-size:12px;color:var(--muted)">Chainable, accepts objects. Replaces @future in most cases. Better monitoring.</div>
+      </div>
+      <div style="background:var(--bg3);padding:0.75rem;border-radius:8px">
+        <div style="font-weight:600;color:var(--text);font-size:13px;margin-bottom:6px">Batch Apex</div>
+        <div style="font-size:12px;color:var(--muted)">Process millions of records in chunks (default 200/chunk). Separate governor limits per chunk.</div>
+      </div>
+    </div>
+    <div class="code-wrap">
+      <div class="code-label">Apex — Batch Class Pattern</div>
+      <div class="code"><span class="ann">@isTest</span> <span class="cm">// ← remove this, was showing test annotation for demo</span>
+<span class="kw">public class</span> <span class="cls">AccountBatch</span> <span class="kw">implements</span>
+    Database.Batchable&lt;SObject&gt;, Database.Stateful {
+
+    <span class="kw">public Integer</span> processedCount = <span class="num">0</span>; <span class="cm">// Stateful = preserve between chunks</span>
+
+    <span class="kw">public</span> Database.QueryLocator <span class="fn">start</span>(Database.BatchableContext bc) {
+        <span class="kw">return</span> Database.getQueryLocator(
+            <span class="str">'SELECT Id, Name FROM Account WHERE Industry = \'Technology\''</span>
+        ); <span class="cm">// Can return up to 50M records here</span>
+    }
+
+    <span class="kw">public void</span> <span class="fn">execute</span>(Database.BatchableContext bc, List&lt;Account&gt; scope) {
+        <span class="kw">for</span> (Account acc : scope) {
+            acc.Description = <span class="str">'Processed by batch'</span>;
+            processedCount++;
+        }
+        <span class="kw">update</span> scope;
+    }
+
+    <span class="kw">public void</span> <span class="fn">finish</span>(Database.BatchableContext bc) {
+        System.<span class="fn">debug</span>(<span class="str">'Total processed: '</span> + processedCount);
+        <span class="cm">// Send completion email, chain another batch, etc.</span>
+    }
+}
+
+<span class="cm">// Invoke: Database.executeBatch(new AccountBatch(), 200);</span>
+</div>
+    </div>
+  </div>
+
+  <h2>Lightning Web Components (LWC)</h2>
+  <div class="card">
+    <div class="code-wrap">
+      <div class="code-label">LWC — accountCard.html</div>
+      <div class="code">&lt;<span class="kw">template</span>&gt;
+    &lt;<span class="kw">lightning-card</span> title="Account Details"&gt;
+        &lt;<span class="kw">template</span> if:true={account}&gt;
+            &lt;<span class="kw">div</span> class="slds-p-around_medium"&gt;
+                &lt;<span class="kw">p</span>&gt;Name: {account.Name}&lt;/<span class="kw">p</span>&gt;
+                &lt;<span class="kw">p</span>&gt;Industry: {account.Industry}&lt;/<span class="kw">p</span>&gt;
+            &lt;/<span class="kw">div</span>&gt;
+        &lt;/<span class="kw">template</span>&gt;
+        &lt;<span class="kw">template</span> if:true={error}&gt;
+            &lt;<span class="kw">p</span>&gt;Error: {error.message}&lt;/<span class="kw">p</span>&gt;
+        &lt;/<span class="kw">template</span>&gt;
+    &lt;/<span class="kw">lightning-card</span>&gt;
+&lt;/<span class="kw">template</span>&gt;
+</div>
+    </div>
+    <div class="code-wrap">
+      <div class="code-label">LWC — accountCard.js</div>
+      <div class="code"><span class="kw">import</span> { LightningElement, api, wire } <span class="kw">from</span> <span class="str">'lwc'</span>;
+<span class="kw">import</span> { getRecord, getFieldValue } <span class="kw">from</span> <span class="str">'lightning/uiRecordApi'</span>;
+<span class="kw">import</span> NAME_FIELD <span class="kw">from</span> <span class="str">'@salesforce/schema/Account.Name'</span>;
+<span class="kw">import</span> INDUSTRY_FIELD <span class="kw">from</span> <span class="str">'@salesforce/schema/Account.Industry'</span>;
+<span class="kw">import</span> getAccountDetails <span class="kw">from</span> <span class="str">'@salesforce/apex/AccountController.getDetails'</span>;
+
+<span class="kw">export default class</span> <span class="cls">AccountCard</span> <span class="kw">extends</span> <span class="cls">LightningElement</span> {
+    <span class="ann">@api</span> recordId; <span class="cm">// Received from record page context</span>
+
+    <span class="cm">// Wire: reactive, automatic — runs when recordId changes</span>
+    <span class="ann">@wire</span>(getRecord, { recordId: <span class="str">'$recordId'</span>,
+        fields: [NAME_FIELD, INDUSTRY_FIELD] })
+    wiredAccount({ data, error }) {
+        <span class="kw">if</span> (data) <span class="kw">this</span>.account = data;
+        <span class="kw">if</span> (error) <span class="kw">this</span>.error = error;
+    }
+
+    <span class="cm">// Imperative Apex call</span>
+    <span class="fn">connectedCallback</span>() {
+        getAccountDetails({ accountId: <span class="kw">this</span>.recordId })
+            .<span class="fn">then</span>(result => { <span class="kw">this</span>.account = result; })
+            .<span class="fn">catch</span>(error => { <span class="kw">this</span>.error = error; });
+    }
+}
+</div>
+    </div>
+    <div class="code-wrap">
+      <div class="code-label">LWC — accountCard.js-meta.xml</div>
+      <div class="code">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;<span class="kw">LightningComponentBundle</span> xmlns="http://soap.sforce.com/2006/04/metadata"&gt;
+    &lt;<span class="kw">apiVersion</span>&gt;59.0&lt;/<span class="kw">apiVersion</span>&gt;
+    &lt;<span class="kw">isExposed</span>&gt;true&lt;/<span class="kw">isExposed</span>&gt;
+    &lt;<span class="kw">targets</span>&gt;
+        &lt;<span class="kw">target</span>&gt;lightning__RecordPage&lt;/<span class="kw">target</span>&gt;
+        &lt;<span class="kw">target</span>&gt;lightning__AppPage&lt;/<span class="kw">target</span>&gt;
+    &lt;/<span class="kw">targets</span>&gt;
+&lt;/<span class="kw">LightningComponentBundle</span>&gt;
+</div>
+    </div>
+  </div>
+
+  <div class="qa-section">
+    <div class="qa-label">🎤 Interview Questions — Development</div>
+    <div class="qa-item"><div class="qa-q" onclick="toggleQA(this)">What is trigger bulkification and why is it important? <span class="qa-chevron">▼</span></div>
+      <div class="qa-a">Triggers fire for batches of records (e.g., data loader uploading 10,000 records). If you put SOQL inside a loop, you'll hit the 100 SOQL limit fast. Bulkification means: collect all record IDs → query once outside loop → store in Map → use Map inside loop. Example: <code>Map&lt;Id, Account&gt; accMap = new Map&lt;Id, Account&gt;([SELECT Id FROM Account WHERE Id IN :accountIds]);</code></div>
+    </div>
+    <div class="qa-item"><div class="qa-q" onclick="toggleQA(this)">When would you use Queueable vs Batch Apex vs @future? <span class="qa-chevron">▼</span></div>
+      <div class="qa-a"><strong>@future</strong>: Simple one-off async, callouts from triggers, primitive params only. <strong>Queueable</strong>: More complex async, need to chain jobs, pass non-primitive params (SObjects), need job ID for monitoring. <strong>Batch</strong>: Processing huge volumes of records (>50k), need per-chunk governor limits reset, need stateful counter across chunks. Rule: use the simplest tool that fits.</div>
+    </div>
+    <div class="qa-item"><div class="qa-q" onclick="toggleQA(this)">Difference between @wire and imperative Apex call in LWC? <span class="qa-chevron">▼</span></div>
+      <div class="qa-a"><strong>@wire</strong>: Reactive — automatically calls the Apex method when reactive properties (like $recordId) change. Data is cached by Salesforce. Runs on component load. Good for read-only data that should refresh reactively. <strong>Imperative</strong>: You call the method explicitly (e.g., on button click). Returns a Promise. More control — can pass dynamic params, trigger on events, handle complex error scenarios. Not cached by default.</div>
+    </div>
+    <div class="qa-item"><div class="qa-q" onclick="toggleQA(this)">What is Database.SaveResult and why use Database.insert vs insert? <span class="qa-chevron">▼</span></div>
+      <div class="qa-a"><code>insert myList;</code> — throws exception on first failure, entire transaction rolls back. <code>Database.insert(myList, false);</code> — partial success allowed (allOrNone = false). Returns <code>Database.SaveResult[]</code> where you can check each record's success/error: <code>if (!result.isSuccess()) { result.getErrors()... }</code>. Use Database.insert when you want to process valid records even if some fail — common in batch processing.</div>
+    </div>
+    <div class="qa-item"><div class="qa-q" onclick="toggleQA(this)">What is ISCHANGED() and how do you check if a field changed in a trigger? <span class="qa-chevron">▼</span></div>
+      <div class="qa-a">In a trigger: <code>Trigger.oldMap.get(acc.Id).Status__c != acc.Status__c</code> — compare old value to new. <code>ISCHANGED()</code> is the formula equivalent for Workflow/Flow/Validation Rules. In triggers always use <code>Trigger.oldMap</code> (available in update/delete contexts). Always null-check: <code>if (Trigger.isUpdate && oldMap.get(rec.Id).Field__c != rec.Field__c)</code></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== INTEGRATION ===================== -->
+<div class="section" id="integration">
+  <div class="section-header">
+    <h1>🔗 Salesforce Integration</h1>
+    <p>Connecting Salesforce with external systems — REST, SOAP, Platform Events, and more.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="dot" style="background:#00a1e0"></span>Integration Patterns Overview</div>
+    <table>
+      <tr><th>Method</th><th>Direction</th><th>Protocol</th><th>Best For</th></tr>
+      <tr><td>REST API</td><td>Both</td><td>HTTP/JSON</td><td>CRUD operations, external apps calling SF</td></tr>
+      <tr><td>SOAP API</td><td>Both</td><td>XML/WSDL</td><td>Legacy enterprise systems, complex transactions</td></tr>
+      <tr><td>Bulk API 2.0</td><td>Both</td><td>HTTP/CSV/JSON</td><td>Large data volumes (millions of records)</td></tr>
+      <tr><td>Streaming API</td><td>Outbound</td><td>CometD</td><td>Real-time record change notifications</td></tr>
+      <tr><td>Platform Events</td><td>Both</td><td>Pub/Sub</td><td>Event-driven, decoupled architecture</td></tr>
+      <tr><td>Outbound Messages</td><td>Outbound</td><td>SOAP</td><td>Workflow-triggered notifications (legacy)</td></tr>
+      <tr><td>Apex Callouts</td><td>Outbound</td><td>HTTP/SOAP</td><td>SF calling external REST/SOAP endpoints</td></tr>
+    </table>
+  </div>
+
+  <h2>REST API — Calling Salesforce from External</h2>
+  <div class="card">
+    <div class="code-wrap">
+      <div class="code-label">REST API — Authentication + Query</div>
+      <div class="code"><span class="cm"># Step 1: Get Access Token (OAuth 2.0 Username-Password Flow)</span>
+POST https://login.salesforce.com/services/oauth2/token
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=password
+&client_id=YOUR_CONSUMER_KEY
+&client_secret=YOUR_CONSUMER_SECRET
+&username=YOUR_USERNAME
+&password=YOUR_PASSWORD+SECURITY_TOKEN
+
+<span class="cm"># Response: { "access_token": "...", "instance_url": "https://xxx.salesforce.com" }</span>
+
+<span class="cm"># Step 2: Use token to call API</span>
+GET {instance_url}/services/data/v59.0/sobjects/Account/
+Authorization: Bearer {access_token}
+
+<span class="cm"># SOQL via REST</span>
+GET {instance_url}/services/data/v59.0/query?q=SELECT+Id,Name+FROM+Account+LIMIT+10
+
+<span class="cm"># Create record</span>
+POST {instance_url}/services/data/v59.0/sobjects/Account/
+{ "Name": "Acme Corp", "Industry": "Technology" }
+
+<span class="cm"># Update record</span>
+PATCH {instance_url}/services/data/v59.0/sobjects/Account/{recordId}
+{ "Industry": "Finance" }
+
+<span class="cm"># Delete record</span>
+DELETE {instance_url}/services/data/v59.0/sobjects/Account/{recordId}
+</div>
+    </div>
+  </div>
+
+  <h2>Apex Callouts — Salesforce calling External</h2>
+  <div class="card">
+    <div class="code-wrap">
+      <div class="code-label">Apex — REST Callout with Named Credential</div>
+      <div class="code"><span class="kw">public class</span> <span class="cls">ExternalAPIService</span> {
+
+    <span class="cm">// Must be @future(callout=true) if called from trigger</span>
+    <span class="kw">public static</span> String <span class="fn">getWeatherData</span>(String city) {
+
+        <span class="cm">// Named Credential handles auth — no hardcoded credentials!</span>
+        HttpRequest req = <span class="kw">new</span> HttpRequest();
+        req.<span class="fn">setEndpoint</span>(<span class="str">'callout:Weather_API/current?city='</span> + city);
+        req.<span class="fn">setMethod</span>(<span class="str">'GET'</span>);
+        req.<span class="fn">setTimeout</span>(<span class="num">10000</span>); <span class="cm">// 10 seconds max</span>
+
+        Http http = <span class="kw">new</span> Http();
+        HttpResponse res = http.<span class="fn">send</span>(req);
+
+        <span class="kw">if</span> (res.<span class="fn">getStatusCode</span>() == <span class="num">200</span>) {
+            Map&lt;String, Object&gt; body =
+                (Map&lt;String, Object&gt;) JSON.<span class="fn">deserializeUntyped</span>(res.<span class="fn">getBody</span>());
+            <span class="kw">return</span> (String) body.<span class="fn">get</span>(<span class="str">'temperature'</span>);
+        } <span class="kw">else</span> {
+            <span class="kw">throw new</span> <span class="cls">CalloutException</span>(
+                <span class="str">'Callout failed: '</span> + res.<span class="fn">getStatus</span>());
+        }
+    }
+}
+</div>
+    </div>
+    <div class="callout callout-amber"><strong>Important:</strong> You cannot make callouts in the same transaction as DML (you'll get a "uncommitted work pending" error). Use @future(callout=true) or Queueable with Database.AllowCallouts.</div>
+  </div>
+
+  <h2>Platform Events — Event-Driven Architecture</h2>
+  <div class="card">
+    <p style="margin-bottom:0.75rem">Platform Events are Salesforce's pub/sub messaging. Decouples systems — publisher doesn't need to know about subscribers.</p>
+    <div class="code-wrap">
+      <div class="code-label">Platform Events — Publish from Apex</div>
+      <div class="code"><span class="cm">// 1. Create Platform Event object: Order_Event__e (via Setup)</span>
+<span class="cm">// 2. Publish from Apex</span>
+<span class="kw">public class</span> <span class="cls">OrderEventPublisher</span> {
+    <span class="kw">public static void</span> <span class="fn">publishOrderCreated</span>(Id orderId, String status) {
+        Order_Event__e event = <span class="kw">new</span> Order_Event__e(
+            Order_Id__c = orderId,
+            Status__c = status,
+            Timestamp__c = DateTime.<span class="fn">now</span>()
+        );
+        Database.SaveResult result = EventBus.<span class="fn">publish</span>(event);
+        <span class="kw">if</span> (!result.isSuccess()) {
+            System.<span class="fn">debug</span>(<span class="str">'Event publish failed: '</span> + result.getErrors());
+        }
+    }
+}
+
+<span class="cm">// 3. Subscribe via Trigger on the Platform Event</span>
+<span class="kw">trigger</span> OrderEventTrigger <span class="kw">on</span> Order_Event__e (after insert) {
+    <span class="kw">for</span> (Order_Event__e event : Trigger.new) {
+        System.<span class="fn">debug</span>(<span class="str">'Order received: '</span> + event.Order_Id__c);
+        <span class="cm">// Process order — update records, send notifications, etc.</span>
+    }
+}
+</div>
+    </div>
+    <div class="callout callout-green"><strong>Platform Events vs Change Data Capture (CDC):</strong> Platform Events are custom events you define. CDC automatically publishes events when standard/custom objects change — useful for syncing external systems.</div>
+  </div>
+
+  <h2>Named Credentials — Secure External Auth</h2>
+  <div class="card">
+    <ul class="steps">
+      <li><span class="step-n">1</span><span class="step-t"><strong>Setup → Named Credentials → New</strong></span></li>
+      <li><span class="step-n">2</span><span class="step-t">Enter the <strong>URL</strong> of the external service, give it a label/name</span></li>
+      <li><span class="step-n">3</span><span class="step-t">Choose <strong>Identity Type</strong>: Named Principal (shared creds) or Per User (each user authenticates)</span></li>
+      <li><span class="step-n">4</span><span class="step-t">Choose <strong>Authentication Protocol</strong>: OAuth 2.0, Basic Auth, JWT, etc.</span></li>
+      <li><span class="step-n">5</span><span class="step-t">In Apex callouts, use <code>callout:Named_Credential_Name/path</code> — credentials are injected automatically</span></li>
+    </ul>
+  </div>
+
+  <div class="qa-section">
+    <div class="qa-label">🎤 Interview Questions — Integration</div>
+    <div class="qa-item"><div class="qa-q" onclick="toggleQA(this)">What are Named Credentials and why use them over hardcoding URLs? <span class="qa-chevron">▼</span></div>
+      <div class="qa-a">Named Credentials store external endpoint URLs and authentication details (API keys, OAuth tokens) securely in Salesforce — not in code. Benefits: (1) No credentials in source code or Custom Settings that can be exported. (2) Auth token refresh handled automatically for OAuth. (3) Remote Site Settings not needed separately. (4) Per-User identity possible — each user's credentials used for their requests. Hardcoding credentials is a security anti-pattern that fails code reviews.</div>
+    </div>
+    <div class="qa-item"><div class="qa-q" onclick="toggleQA(this)">What is the difference between Platform Events and Streaming API / PushTopic? <span class="qa-chevron">▼</span></div>
+      <div class="qa-a"><strong>PushTopic/Streaming API</strong>: Subscribe to SOQL query results and receive notifications when matching records change. Older approach. <strong>Platform Events</strong>: Custom event objects you define. Fully decoupled pub/sub. Events are durable (retained 72 hours). More scalable. Platform Events are the modern recommended approach — Salesforce is deprecating PushTopics in favor of Change Data Capture + Platform Events.</div>
+    </div>
+    <div class="qa-item"><div class="qa-q" onclick="toggleQA(this)">How do you handle callouts in a trigger context? <span class="qa-chevron">▼</span></div>
+      <div class="qa-a">You cannot make synchronous callouts directly in a trigger (DML + callout in same transaction is not allowed). Solutions: (1) Use <code>@future(callout=true)</code> method — pass primitive params from trigger to @future. (2) Use Queueable Apex implementing <code>Database.AllowsCallouts</code>. (3) Use Platform Events to decouple — trigger publishes event, subscriber makes callout.</div>
+    </div>
+    <div class="qa-item"><div class="qa-q" onclick="toggleQA(this)">What OAuth flows does Salesforce support? Which is used when? <span class="qa-chevron">▼</span></div>
+      <div class="qa-a"><strong>Web Server Flow</strong>: Server-side web apps, most common, uses auth code + redirect URI. <strong>User-Agent Flow</strong>: Client-side JS apps, implicit grant. <strong>Username-Password Flow</strong>: Server-to-server (no user interaction), used for backend integrations. <strong>JWT Bearer Flow</strong>: Server-to-server with certificate, no user credentials in code. <strong>Device Flow</strong>: IoT/CLI apps with limited input. <strong>Refresh Token Flow</strong>: Renewing access without re-auth. For 2 YOE: know Web Server and Username-Password well.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== TESTING ===================== -->
+<div class="section" id="testing">
+  <div class="section-header">
+    <h1>🧪 Salesforce Testing</h1>
+    <p>End-to-end quality assurance — from unit to UAT to production validation.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="dot" style="background:#00a1e0"></span>Testing Types in Salesforce Projects</div>
+    <table>
+      <tr><th>Type</th><th>Who Runs</th><th>When</th><th>Purpose</th></tr>
+      <tr><td>Unit Testing</td><td>Developer</td><td>During development</td><td>Test individual Apex methods in isolation</td></tr>
+      <tr><td>Integration Testing</td><td>Developer / QA</td><td>After unit testing</td><td>Test Apex + external system interactions</td></tr>
+      <tr><td>System Testing</td><td>QA</td><td>Complete build</td><td>End-to-end business process testing</td></tr>
+      <tr><td>Smoke Testing</td><td>QA / Dev</td><td>After each deployment</td><td>Quick sanity — core features still work</td></tr>
+      <tr><td>Regression Testing</td><td>QA</td><td>After changes</td><td>Ensure existing features not broken</td></tr>
+      <tr><td>UAT</td><td>Business Users</td><td>Before Go-Live</td><td>Validate against business requirements</td></tr>
+      <tr><td>Performance Testing</td><td>QA / Dev</td><td>Pre Go-Live</td><td>Governor limits, load under bulk data</td></tr>
+      <tr><td>Exploratory Testing</td><td>QA / Users</td><td>Any stage</td><td>Unscripted testing to find edge cases</td></tr>
+    </table>
+  </div>
+
+  <h2>Unit Testing — Apex Test Classes</h2>
+  <div class="card">
+    <div class="callout callout-amber" style="margin-bottom:0.75rem"><strong>Salesforce requires 75% code coverage</strong> to deploy to production. But aim for 90%+ and test behavior, not just line coverage.</div>
+    <div class="code-wrap">
+      <div class="code-label">Apex — Complete Test Class Pattern</div>
+      <div class="code"><span class="ann">@isTest</span>
+<span class="kw">public class</span> <span class="cls">AccountControllerTest</span> {
+
+    <span class="cm">// Test Setup — runs once before all test methods, rolled back after</span>
+    <span class="ann">@TestSetup</span>
+    <span class="kw">static void</span> <span class="fn">setupTestData</span>() {
+        Account acc = <span class="kw">new</span> Account(Name = <span class="str">'Test Account'</span>, Industry = <span class="str">'Technology'</span>);
+        <span class="kw">insert</span> acc;
+
+        Contact con = <span class="kw">new</span> Contact(
+            LastName = <span class="str">'Test'</span>, AccountId = acc.Id, Email = <span class="str">'test@test.com'</span>);
+        <span class="kw">insert</span> con;
+    }
+
+    <span class="ann">@isTest</span>
+    <span class="kw">static void</span> <span class="fn">testGetAccount_HappyPath</span>() {
+        Account acc = [<span class="kw">SELECT</span> Id <span class="kw">FROM</span> Account <span class="kw">WHERE</span> Name = <span class="str">'Test Account'</span> <span class="kw">LIMIT</span> <span class="num">1</span>];
+
+        Test.<span class="fn">startTest</span>(); <span class="cm">// Resets governor limits inside this block</span>
+        Account result = <span class="cls">AccountController</span>.<span class="fn">getAccount</span>(acc.Id);
+        Test.<span class="fn">stopTest</span>();  <span class="cm">// Completes async operations</span>
+
+        System.<span class="fn">assertNotEquals</span>(<span class="kw">null</span>, result, <span class="str">'Account should not be null'</span>);
+        System.<span class="fn">assertEquals</span>(<span class="str">'Test Account'</span>, result.Name, <span class="str">'Name should match'</span>);
+    }
+
+    <span class="ann">@isTest</span>
+    <span class="kw">static void</span> <span class="fn">testGetAccount_NullId_ThrowsException</span>() {
+        <span class="kw">try</span> {
+            Test.<span class="fn">startTest</span>();
+            <span class="cls">AccountController</span>.<span class="fn">getAccount</span>(<span class="kw">null</span>);
+            Test.<span class="fn">stopTest</span>();
+            System.<span class="fn">assert</span>(<span class="kw">false</span>, <span class="str">'Should have thrown exception'</span>);
+        } <span class="kw">catch</span> (IllegalArgumentException e) {
+            System.<span class="fn">assert</span>(<span class="kw">true</span>, <span class="str">'Correct exception thrown'</span>);
+        }
+    }
+
+    <span class="cm">// Test callouts — must mock HTTP responses</span>
+    <span class="ann">@isTest</span>
+    <span class="kw">static void</span> <span class="fn">testCallout</span>() {
+        Test.<span class="fn">setMock</span>(HttpCalloutMock.class, <span class="kw">new</span> <span class="cls">MockHTTPResponse</span>());
+        Test.<span class="fn">startTest</span>();
+        String result = <span class="cls">ExternalAPIService</span>.<span class="fn">getWeatherData</span>(<span class="str">'London'</span>);
+        Test.<span class="fn">stopTest</span>();
+        System.<span class="fn">assertNotEquals</span>(<span class="kw">null</span>, result);
+    }
+}
+
+<span class="cm">// Mock HTTP response for callout tests</span>
+<span class="ann">@isTest</span>
+<span class="kw">public class</span> <span class="cls">MockHTTPResponse</span> <span class="kw">implements</span> HttpCalloutMock {
+    <span class="kw">public</span> HTTPResponse <span class="fn">respond</span>(HTTPRequest req) {
+        HttpResponse res = <span class="kw">new</span> HttpResponse();
+        res.<span class="fn">setStatusCode</span>(<span class="num">200</span>);
+        res.<span class="fn">setBody</span>(<span class="str">'{"temperature": "22°C"}'</span>);
+        <span class="kw">return</span> res;
+    }
+}
+</div>
+    </div>
+  </div>
+
+  <h2>Smoke Testing — Post-Deployment Checklist</h2>
+  <div class="card">
+    <p style="margin-bottom:0.75rem">Quick sanity checks immediately after deploying to any environment. Not exhaustive — just verifies nothing is catastrophically broken.</p>
+    <ul>
+      <li><strong>Core navigation:</strong> Can users log in? Does the home page load? Do tabs open?</li>
+      <li><strong>Critical object CRUD:</strong> Can you create an Account, Contact, Opportunity? Do record pages load?</li>
+      <li><strong>Key flows:</strong> Does the primary sales/service workflow work end-to-end?</li>
+      <li><strong>Integrations live:</strong> Are API callouts to external systems responding?</li>
+      <li><strong>Deployed changes:</strong> Verify the specific features that were deployed work as expected</li>
+      <li><strong>No critical errors:</strong> Check Debug Logs and Platform Events for error spikes</li>
+    </ul>
+    <div class="callout callout-blue" style="margin-top:0.75rem"><strong>Duration:</strong> 15-30 minutes. Smoke testing should be fast. If it takes hours, that's System Testing territory.</div>
+  </div>
+
+  <h2>UAT — User Acceptance Testing</h2>
+  <div class="card">
+    <ul class="steps">
+      <li><span class="step-n">1</span><span class="step-t"><strong>Define Acceptance Criteria</strong> — from user stories/business requirements. Clear pass/fail conditions.</span></li>
+      <li><span class="step-n">2</span><span class="step-t"><strong>Create Test Scripts</strong> — step-by-step scenarios for business users to follow, with expected results.</span></li>
+      <li><span class="step-n">3</span><span class="step-t"><strong>Prepare Test Environment</strong> — use a Full Sandbox with representative production data.</span></li>
+      <li><span class="step-n">4</span><span class="step-n">4</span><span class="step-t"><strong>Business Users Execute Tests</strong> — actual end users (not developers) run scenarios.</span></li>
+      <li><span class="step-n">5</span><span class="step-t"><strong>Log Defects</strong> — anything that doesn't match expected behavior is raised as a defect (not a change request).</span></li>
+      <li><span class="step-n">6</span><span class="step-t"><strong>Sign-off</strong> — stakeholders formally approve go-live once all critical defects resolved.</span></li>
+    </ul>
+    <div class="callout callout-green" style="margin-top:0.75rem"><strong>Common UAT Issues in Salesforce:</strong> Data not carrying over from old system, sharing rules restricting access for test users, email alerts going to wrong recipients, page layouts missing expected fields.</div>
+  </div>
+
+  <h2>Regression Testing</h2>
+  <div class="card">
+    <p style="margin-bottom:0.5rem">After any change, ensure existing functionality is not broken. In Salesforce context:</p>
+    <ul>
+      <li><strong>Run all Apex tests</strong> — <code>Run All Tests</code> in Developer Console or CI pipeline</li>
+      <li><strong>Validation rules</strong> — test edge cases that were previously passing</li>
+      <li><strong>Integrations</strong> — re-test all API endpoints after field/object changes</li>
+      <li><strong>Reports/Dashboards</strong> — verify data still aggregates correctly after schema changes</li>
+      <li><strong>Automation</strong> — re-test all Flows and triggers affected by changed objects</li>
+      <li><strong>Page Layouts</strong> — verify all profiles see the correct layout after changes</li>
+    </ul>
+    <div class="callout callout-amber" style="margin-top:0.75rem"><strong>Regression Test Suites:</strong> In Salesforce, create Test Suites (Developer Console → Test → New Suite) to group related test classes and run them together in CI/CD pipelines.</div>
+  </div>
+
+  <h2>Performance Testing in Salesforce</h2>
+  <div class="card">
+    <ul>
+      <li><strong>Data Volume Testing:</strong> Test with production-like data volumes. A query that works on 100 records may time out on 100,000.</li>
+      <li><strong>Governor Limit Testing:</strong> Use <code>Limits.getQueries()</code>, <code>Limits.getCpuTime()</code> in debug logs to profile real usage.</li>
+      <li><strong>Batch size testing:</strong> Test Batch Apex with chunk sizes 200 (default), 100, and 50 to find optimal size.</li>
+      <li><strong>Load testing:</strong> Use Salesforce Bulk API to test insert/update of large datasets. Use Real-Time Event Monitoring.</li>
+      <li><strong>Page performance:</strong> Use Salesforce Lightning Inspector (Chrome extension) to analyze LWC rendering performance.</li>
+    </ul>
+  </div>
+
+  <div class="qa-section">
+    <div class="qa-label">🎤 Interview Questions — Testing</div>
+    <div class="qa-item"><div class="qa-q" onclick="toggleQA(this)">What is the Salesforce code coverage requirement? What counts as covered? <span class="qa-chevron">▼</span></div>
+      <div class="qa-a">Minimum <strong>75% code coverage</strong> across all Apex in the org (not per class) is required to deploy to production. A line is "covered" if a test method executes it. Comments, blank lines, and System.debug() don't count. Test classes themselves don't count. <strong>Important:</strong> Coverage is necessary but not sufficient — also assert correct behavior, not just execute lines.</div>
+    </div>
+    <div class="qa-item"><div class="qa-q" onclick="toggleQA(this)">What is Test.startTest() / stopTest() and why is it important? <span class="qa-chevron">▼</span></div>
+      <div class="qa-a"><code>Test.startTest()</code> resets all governor limit counters — so limits used in @TestSetup don't count against your test's limits. <code>Test.stopTest()</code> forces all asynchronous operations (future, queueable, batch, scheduled) to complete synchronously within the test. This is how you test async code — start, call async method, stopTest, then assert on results.</div>
+    </div>
+    <div class="qa-item"><div class="qa-q" onclick="toggleQA(this)">What is the difference between Unit Testing and Integration Testing in Salesforce? <span class="qa-chevron">▼</span></div>
+      <div class="qa-a"><strong>Unit Testing</strong>: Tests a single Apex method in isolation. External dependencies (callouts, other systems) are mocked using <code>HttpCalloutMock</code> or <code>Test.setMock()</code>. Fast, no external dependencies, runs every deployment. <strong>Integration Testing</strong>: Tests the actual interaction between Salesforce and external systems. Uses real endpoints (in a sandbox). Verifies data actually flows correctly. Done less frequently — usually pre-deployment or on-demand.</div>
+    </div>
+    <div class="qa-item"><div class="qa-q" onclick="toggleQA(this)">What is a Full Sandbox vs Partial vs Developer Sandbox? <span class="qa-chevron">▼</span></div>
+      <div class="qa-a"><strong>Developer</strong>: No production data, metadata only, 200MB storage, free, fast refresh. Good for development. <strong>Developer Pro</strong>: Like Developer but 1GB storage. <strong>Partial</strong>: Metadata + sample production data (up to 5GB), 5-day refresh. Good for UAT with realistic data. <strong>Full</strong>: Complete copy of production (metadata + all data), refresh once every 29 days, matches production storage. Used for UAT, performance testing, regression. Choose environment based on how representative data needs to be.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== CONFIGURATION ===================== -->
+<div class="section" id="config">
+  <div class="section-header">
+    <h1>🎛 Salesforce Configuration</h1>
+    <p>Clicks not code — custom objects, fields, layouts, and App Builder.</p>
+  </div>
+
+  <h2>Custom Object & Field Creation</h2>
+  <div class="card">
+    <ul class="steps">
+      <li><span class="step-n">1</span><span class="step-t"><strong>Setup → Object Manager → Create → Custom Object</strong></span></li>
+      <li><span class="step-n">2</span><span class="step-t">Enter <strong>Label</strong> (singular), <strong>Plural Label</strong>, <strong>Object Name</strong> (API name gets __c suffix automatically)</span></li>
+      <li><span class="step-n">3</span><span class="step-t">Choose <strong>Record Name</strong> type: Text (auto-number) or Auto Number</span></li>
+      <li><span class="step-n">4</span><span class="step-t">Enable optional features: Allow Chatter Feed, Track Field History, Reports, Search</span></li>
+      <li><span class="step-n">5</span><span class="step-t">After saving: Add <strong>Custom Fields</strong> → Choose field type → Set label → Configure FLS → Add to Layout</span></li>
+    </ul>
+  </div>
+
+  <h2>Field Types — Know Them All</h2>
+  <div class="card">
+    <div class="grid-2">
+      <div>
+        <div style="font-size:11px;font-weight:700;color:var(--accent);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.05em">Data Fields</div>
+        <ul style="font-size:12px">
+          <li><strong style="color:var(--text)">Text</strong> — up to 255 chars, indexed if unique</li>
+          <li><strong style="color:var(--text)">Text Area</strong> — up to 255 chars, not searchable</li>
+          <li><strong style="color:var(--text)">Long Text Area</strong> — up to 131,072 chars</li>
+          <li><strong style="color:var(--text)">Rich Text</strong> — HTML formatted, up to 131,072</li>
+          <li><strong style="color:var(--text)">Number</strong> — decimals configurable</li>
+          <li><strong style="color:var(--text)">Currency</strong> — respects org currency settings</li>
+          <li><strong style="color:var(--text)">Percent</strong> — number stored as decimal</li>
+          <li><strong style="color:var(--text)">Date / DateTime</strong> — timezone aware for DateTime</li>
+          <li><strong style="color:var(--text)">Checkbox</strong> — boolean, default true/false</li>
+          <li><strong style="color:var(--text)">Email</strong> — validated email format</li>
+          <li><strong style="color:var(--text)">Phone</strong> — free text, click-to-dial</li>
+          <li><strong style="color:var(--text)">URL</strong> — clickable hyperlink</li>
+          <li><strong style="color:var(--text)">Picklist</strong> — single select from list</li>
+          <li><strong style="color:var(--text)">Multi-Select Picklist</strong> — multiple values, stored semicolon-delimited</li>
+        </ul>
+      </div>
+      <div>
+        <div style="font-size:11px;font-weight:700;color:var(--green);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.05em">Calculated / Relationship</div>
+        <ul style="font-size:12px">
+          <li><strong style="color:var(--text)">Formula</strong> — read-only calculated, not stored in DB</li>
+          <li><strong style="color:var(--text)">Roll-Up Summary</strong> — aggregate child records (MD only)</li>
+          <li><strong style="color:var(--text)">Lookup</strong> — link to another object (loose coupling)</li>
+          <li><strong style="color:var(--text)">Master-Detail</strong> — tight coupling with cascade delete</li>
+          <li><strong style="color:var(--text)">Hierarchy</strong> — self-lookup (used in User object)</li>
+          <li><strong style="color:var(--text)">External Lookup</strong> — link to external object</li>
+        </ul>
+        <div style="font-size:11px;font-weight:700;color:var(--amber);margin-bottom:8px;margin-top:1rem;text-transform:uppercase;letter-spacing:0.05em">Special</div>
+        <ul style="font-size:12px">
+          <li><strong style="color:var(--text)">Geolocation</strong> — lat/lng coordinate pair</li>
+          <li><strong style="color:var(--text)">Encrypted Text</strong> — stored encrypted (Shield)</li>
+          <li><strong style="color:var(--text)">Auto Number</strong> — auto-incrementing with prefix</li>
+        </ul>
+      </div>
+    </div>
+    <div class="callout callout-amber" style="margin-top:0.75rem"><strong>Multi-Select Picklist in SOQL:</strong> Use INCLUDES() instead of = : <code>WHERE Category__c INCLUDES ('Tech')</code></div>
+  </div>
+
+  <h2>Lightning App Builder — Page Types</h2>
+  <div class="card">
+    <div class="grid-3">
+      <div style="background:var(--bg3);padding:0.75rem;border-radius:8px;text-align:center">
+        <div style="font-size:20px;margin-bottom:6px">📱</div>
+        <div style="font-weight:600;color:var(--text);font-size:13px">App Page</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:4px">Custom tab or home page in a Lightning App</div>
+      </div>
+      <div style="background:var(--bg3);padding:0.75rem;border-radius:8px;text-align:center">
+        <div style="font-size:20px;margin-bottom:6px">📄</div>
+        <div style="font-weight:600;color:var(--text);font-size:13px">Record Page</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:4px">Custom layout for a specific object's record detail page</div>
+      </div>
+      <div style="background:var(--bg3);padding:0.75rem;border-radius:8px;text-align:center">
+        <div style="font-size:20px;margin-bottom:6px">🏠</div>
+        <div style="font-weight:600;color:var(--text);font-size:13px">Home Page</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:4px">Custom Lightning Home tab for different user profiles</div>
+      </div>
+    </div>
+    <ul class="steps" style="margin-top:0.75rem">
+      <li><span class="step-n">1</span><span class="step-t"><strong>Setup → Lightning App Builder</strong> → New → Choose Page Type</span></li>
+      <li><span class="step-n">2</span><span class="step-t">Drag standard and custom LWC/Aura components from the left panel</span></li>
+      <li><span class="step-n">3</span><span class="step-t">Configure component properties in the right panel</span></li>
+      <li><span class="step-n">4</span><span class="step-t">Save → Activate → Assign to Profiles/Apps/Record Types</span></li>
+    </ul>
+  </div>
+
+  <h2>Record Types</h2>
+  <div class="card">
+    <p style="margin-bottom:0.75rem">Record Types allow different <strong>picklist values</strong>, <strong>page layouts</strong>, and <strong>business processes</strong> for different user groups within the same object.</p>
+    <div class="code-wrap">
+      <div class="code-label">Example Use Case — Opportunity Record Types</div>
+      <div class="code">Direct Sales Record Type:
+  - Stage picklist: Prospect → Qualified → Proposal → Negotiation → Closed Won/Lost
+  - Page Layout: Shows Competitor__c, Discount__c fields
+
+Partner Sales Record Type:
+  - Stage picklist: Partner Identified → Partner Demo → Partner Proposal → Closed Won/Lost
+  - Page Layout: Shows Partner_Name__c, Commission__c fields
+
+Assignment: Profile → Record Type (default) + which types they can create
+</div>
+    </div>
+    <ul class="steps">
+      <li><span class="step-n">1</span><span class="step-t"><strong>Setup → Object Manager → [Object] → Record Types → New</strong></span></li>
+      <li><span class="step-n">2</span><span class="step-t">Give it a name, assign a <strong>Business Process</strong> (for Opportunity/Case/Lead)</span></li>
+      <li><span class="step-n">3</span><span class="step-t">Assign to profiles that can use this record type and choose default</span></li>
+      <li><span class="step-n">4</span><span class="step-t">Configure picklist values and page layout per record type</span></li>
+    </ul>
+  </div>
+
+  <div class="qa-section">
+    <div class="qa-label">🎤 Interview Questions — Configuration</div>
+    <div class="qa-item"><div class="qa-q" onclick="toggleQA(this)">What is the difference between a Formula field and a Roll-Up Summary field? <span class="qa-chevron">▼</span></div>
+      <div class="qa-a"><strong>Formula Field</strong>: Calculated on-the-fly when record is displayed. References fields on the same record or parent (via lookup/MD). Not stored in DB. Can cross-reference parent records. Available on all objects. <strong>Roll-Up Summary</strong>: Stored in DB, calculated when child records change. Only on parent in Master-Detail. Aggregates child record data (COUNT, SUM, MIN, MAX). Can have filter criteria. Slower to calculate but stored value available for indexing/reporting.</div>
+    </div>
+    <div class="qa-item"><div class="qa-q" onclick="toggleQA(this)">How do you migrate configuration between environments? <span class="qa-chevron">▼</span></div>
+      <div class="qa-a">Three main approaches: (1) <strong>Change Sets</strong> — GUI-driven, simple deployment of metadata between connected orgs. Good for small changes. (2) <strong>Salesforce CLI (SFDX)</strong> — retrieve metadata as files, deploy via CLI commands. Works with any org. CI/CD friendly. (3) <strong>ANT Migration Tool</strong> — older, XML-based. Being phased out. Modern projects use SFDX + source control (Git) + CI/CD (GitHub Actions, Jenkins, Copado).</div>
+    </div>
+    <div class="qa-item"><div class="qa-q" onclick="toggleQA(this)">What is a Page Layout vs a Lightning Record Page? <span class="qa-chevron">▼</span></div>
+      <div class="qa-a"><strong>Page Layout</strong> (Classic): Controls which fields, related lists, and buttons appear on a record. Assigned by Profile + Record Type. Part of Classic and Lightning. <strong>Lightning Record Page</strong> (App Builder): Controls the overall page structure in Lightning — which components appear, where, with what configuration. Can embed multiple page layouts in different sections. Assigned by Profile, App, or Record Type. Lightning Record Pages are more flexible — they can show LWC components, related apps, etc. that Classic Page Layouts cannot.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== REPORTS ===================== -->
+<div class="section" id="reports">
+  <div class="section-header">
+    <h1>📊 Reports & Dashboards</h1>
+    <p>Building insights from Salesforce data — report types, formats, and dashboard design.</p>
+  </div>
+
+  <h2>Report Types — Know the 4 Formats</h2>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title"><span class="dot" style="background:#00a1e0"></span>Tabular Report</div>
+      <ul>
+        <li>Simple list of records — like a spreadsheet</li>
+        <li>No subtotals, no grouping</li>
+        <li><strong>Cannot be used as dashboard source</strong> (unless with row limit)</li>
+        <li>Good for: export lists, simple record inventories</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="dot" style="background:#4bca81"></span>Summary Report</div>
+      <ul>
+        <li>Records grouped by rows with subtotals</li>
+        <li>Can add up to 3 levels of grouping</li>
+        <li><strong>Most common type</strong> for dashboards</li>
+        <li>Good for: Opportunities by Stage, Accounts by Industry</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="dot" style="background:#ffb75d"></span>Matrix Report</div>
+      <ul>
+        <li>Grouped by BOTH rows AND columns</li>
+        <li>Shows data in grid format with subtotals on each axis</li>
+        <li>Good for: Sales by Rep by Month, Leads by Source by Region</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="dot" style="background:#a78bfa"></span>Joined Report</div>
+      <ul>
+        <li>Multiple report "blocks" — each block can use a different report type</li>
+        <li>Compare data across different objects in one report</li>
+        <li>Good for: Accounts with open Opps + Accounts with open Cases</li>
+        <li>Cannot be used as dashboard source</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2>Report Builder — Key Features</h2>
+  <div class="card">
+    <div class="grid-2">
+      <div>
+        <div style="font-size:12px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px">Filters</div>
+        <ul style="font-size:12px">
+          <li><strong style="color:var(--text)">Standard Filter</strong> — date range, owner, record type</li>
+          <li><strong style="color:var(--text)">Field Filter</strong> — filter by any field value</li>
+          <li><strong style="color:var(--text)">Cross Filter</strong> — "Accounts WITH Opportunities" or "WITHOUT"</li>
+          <li><strong style="color:var(--text)">Row Limit</strong> — for Tabular reports (required for dashboard use)</li>
+          <li><strong style="color:var(--text)">Filter Logic</strong> — AND/OR combinations: 1 AND (2 OR 3)</li>
+        </ul>
+      </div>
+      <div>
+        <div style="font-size:12px;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px">Advanced Features</div>
+        <ul style="font-size:12px">
+          <li><strong style="color:var(--text)">Bucket Column</strong> — group picklist/number/text values into buckets without formula</li>
+          <li><strong style="color:var(--text)">Summary Formula</strong> — custom calculations (% of total, ratio)</li>
+          <li><strong style="color:var(--text)">Conditional Highlighting</strong> — color cells based on value thresholds</li>
+          <li><strong style="color:var(--text)">Report Subscriptions</strong> — auto-email report on schedule</li>
+          <li><strong style="color:var(--text)">Historical Trending</strong> — track field value changes over time</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <h2>Custom Report Types</h2>
+  <div class="card">
+    <p style="margin-bottom:0.75rem">Standard report types cover most standard objects. Custom Report Types let you create reports spanning custom objects or relationships not available by default.</p>
+    <ul class="steps">
+      <li><span class="step-n">1</span><span class="step-t"><strong>Setup → Report Types → New Custom Report Type</strong></span></li>
+      <li><span class="step-n">2</span><span class="step-t">Choose the <strong>Primary Object</strong> (e.g., Account)</span></li>
+      <li><span class="step-n">3</span><span class="step-t">Add related objects — "with" (inner join) or "with or without" (left outer join)</span></li>
+      <li><span class="step-n">4</span><span class="step-t">Deploy the report type and add it to a category</span></li>
+      <li><span class="step-n">5</span><span class="step-t">Add available fields to the field layout — users building reports see only these fields</span></li>
+    </ul>
+    <div class="callout callout-blue" style="margin-top:0.75rem"><strong>Tip:</strong> "With" means only records that HAVE the related object (inner join). "With or without" means all primary records, even if no related records exist (left join).</div>
+  </div>
+
+  <h2>Dashboards</h2>
+  <div class="card">
+    <div class="grid-2">
+      <div>
+        <div style="font-size:12px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px">Dashboard Components</div>
+        <ul style="font-size:12px">
+          <li><strong style="color:var(--text)">Chart</strong> — bar, line, pie, donut, funnel, scatter, gauge</li>
+          <li><strong style="color:var(--text)">Table</strong> — tabular data from report</li>
+          <li><strong style="color:var(--text)">Metric</strong> — single number (total, count)</li>
+          <li><strong style="color:var(--text)">Gauge</strong> — progress toward target (red/yellow/green ranges)</li>
+          <li><strong style="color:var(--text)">Visualforce page</strong> — embed custom VF content</li>
+          <li><strong style="color:var(--text)">Custom LWC</strong> — embed Lightning components</li>
+        </ul>
+      </div>
+      <div>
+        <div style="font-size:12px;font-weight:700;color:var(--amber);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px">Limits & Behavior</div>
+        <ul style="font-size:12px">
+          <li>Max <strong>20 components</strong> per dashboard</li>
+          <li>Dashboard <strong>Running User</strong> — whose data/sharing the dashboard uses</li>
+          <li><strong>Dynamic Dashboard</strong> — runs as the logged-in user (each user sees their data)</li>
+          <li>Max <strong>5 dynamic dashboards</strong> per org (Enterprise) or 10 (Unlimited)</li>
+          <li>Dashboards refresh on demand or scheduled</li>
+          <li>Can be embedded in record pages via App Builder</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <h2>Dynamic Dashboards — Implementation</h2>
+  <div class="card">
+    <ul class="steps">
+      <li><span class="step-n">1</span><span class="step-t"><strong>Create reports</strong> with "My" filters (My Accounts, My Opportunities) so they scope to the viewing user</span></li>
+      <li><span class="step-n">2</span><span class="step-t"><strong>Create a new Dashboard</strong> → in Properties, set Running User to <strong>"Run as logged-in user"</strong></span></li>
+      <li><span class="step-n">3</span><span class="step-t">Add components from the "My" scoped reports</span></li>
+      <li><span class="step-n">4</span><span class="step-t">Each sales rep viewing the dashboard sees only <strong>their own data</strong></span></li>
+    </ul>
+    <div class="callout callout-amber" style="margin-top:0.75rem"><strong>Limitation:</strong> Dynamic Dashboard data is not cached per-user — each view is a fresh query. Refreshing a dynamic dashboard refreshes it for you only, not other users.</div>
+  </div>
+
+  <div class="qa-section">
+    <div class="qa-label">🎤 Interview Questions — Reports & Dashboards</div>
+    <div class="qa-item"><div class="qa-q" onclick="toggleQA(this)">What are the 4 report types? When would you use each? <span class="qa-chevron">▼</span></div>
+      <div class="qa-a"><strong>Tabular</strong>: Simple list, no grouping. Export data, quick record lists. Cannot be dashboard source without row limit. <strong>Summary</strong>: Grouped rows with subtotals. Most common — sales pipeline by stage, leads by source. Best for dashboards. <strong>Matrix</strong>: Rows AND columns grouping. Comparing same metric across two dimensions — rep performance by quarter. <strong>Joined</strong>: Multiple blocks, multiple report types in one. Compare accounts with/without opportunities in same view.</div>
+    </div>
+    <div class="qa-item"><div class="qa-q" onclick="toggleQA(this)">What is a Dynamic Dashboard? Limitations? <span class="qa-chevron">▼</span></div>
+      <div class="qa-a">A Dynamic Dashboard runs as the <strong>logged-in user</strong> rather than a fixed running user. Each viewer sees data they have access to. Ideal for sales reps each seeing their own pipeline. <strong>Limitations:</strong> (1) Max 5 per org in Enterprise, 10 in Unlimited. (2) Cannot schedule dynamic dashboards. (3) Cannot be subscribed to. (4) The viewing user must have access to the underlying reports. (5) No data caching across users.</div>
+    </div>
+    <div class="qa-item"><div class="qa-q" onclick="toggleQA(this)">What is a Bucket Column in a report? <span class="qa-chevron">▼</span></div>
+      <div class="qa-a">Bucket Columns let you categorize report data without creating a formula field. Example: ACV Amount — bucket "Small" (&lt;$10k), "Medium" ($10k-$100k), "Large" (&gt;$100k). Supports Text (map specific values to buckets), Number (define ranges), and Picklist fields. Good for ad-hoc grouping in reports without changing the data model. Formula fields are better when you need the calculation across the whole org.</div>
+    </div>
+    <div class="qa-item"><div class="qa-q" onclick="toggleQA(this)">A user says their dashboard shows wrong data. How do you investigate? <span class="qa-chevron">▼</span></div>
+      <div class="qa-a">Step by step: (1) Check the <strong>Running User</strong> of the dashboard — is it a specific user or "as logged-in user"? (2) Open the <strong>underlying report</strong> — does it show the right data? (3) Check report <strong>filters</strong> — is the date range, owner filter, or record type filter excluding the expected data? (4) Check the <strong>sharing/OWD</strong> of the running user — can they see those records? (5) Check when the dashboard was <strong>last refreshed</strong> — stale data? (6) Check if <strong>Field Filters</strong> or Cross Filters are too restrictive.</div>
+    </div>
+  </div>
+</div>
+
+</main>
+</div>
+
+<script>
+function show(id, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+}
+
+function toggleQA(el) {
+  const ans = el.nextElementSibling;
+  const chevron = el.querySelector('.qa-chevron');
+  const isOpen = ans.classList.contains('open');
+  ans.classList.toggle('open', !isOpen);
+  chevron.style.transform = isOpen ? '' : 'rotate(180deg)';
+}
+</script>
+</body>
+</html>

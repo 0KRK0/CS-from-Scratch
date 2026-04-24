@@ -98,7 +98,21 @@ Custom UI processes
 Example:
 
 Loan application form with multiple steps
-3. Scheduled Flow
+3. Autolaunched Flow
+
+Runs without user interaction, triggered by other processes
+
+Used for:
+
+Sub-flows (called by other flows)
+API integrations
+Background processes
+Called from Apex/Process Builder
+
+Example:
+
+Process Builder → Call Autolaunched Flow → Update related records
+4. Scheduled Flow
 
 Runs at a specific time or frequency
 
@@ -111,6 +125,13 @@ Scheduled updates
 Example:
 
 Every night → Update inactive customers
+
+Flow Categories Summary:
+- **Record-Triggered**: Automatic on record changes
+- **Screen**: User-guided processes
+- **Autolaunched**: Background/API processes
+- **Scheduled**: Time-based automation
+
 8.3 When to Use Flow vs Apex
 
 This is one of the most important interview questions.
